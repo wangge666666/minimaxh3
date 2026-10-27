@@ -1,0 +1,53 @@
+{
+  "version": "1",
+  "template": "z_image_turbo_img2img_api.json",
+  "fields": {
+    "prompt": {
+      "node": "57:27",
+      "input": "text",
+      "type": "string"
+    },
+    "seed": {
+      "node": "57:3",
+      "input": "seed",
+      "type": "integer",
+      "min": 0,
+      "max": 4294967295
+    },
+    "width": {
+      "node": "hub:scale",
+      "input": "width",
+      "type": "integer",
+      "enum": [
+        256,
+        512,
+        768
+      ]
+    },
+    "height": {
+      "node": "hub:scale",
+      "input": "height",
+      "type": "integer",
+      "enum": [
+        256,
+        512,
+        768
+      ]
+    },
+    "image": {
+      "node": "hub:load",
+      "input": "image",
+      "type": "string"
+    },
+    "denoise": {
+      "node": "57:3",
+      "input": "denoise",
+      "type": "number",
+      "min": 0.1,
+      "max": 1
+    }
+  },
+  "outputs": [
+    "9"
+  ]
+}

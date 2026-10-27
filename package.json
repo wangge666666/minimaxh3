@@ -1,0 +1,14 @@
+{
+  "name": "comfyui-cloud-hub",
+  "private": true,
+  "packageManager": "pnpm@11.25.0",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "pnpm --filter @hub/web dev --hostname 127.0.0.1",
+    "build": "pnpm --filter @hub/web build",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test"
+  }
+}

@@ -1,0 +1,158 @@
+{
+  "version": "1.0.0",
+  "tag": "v1.0.0",
+  "baseline_branch": "codex/baseline-v1.0",
+  "captured_date": "2026-10-28",
+  "timezone": "Asia/Taipei",
+  "queue_capacity": 500,
+  "worker_concurrency": 1,
+  "image_generation_enabled": false,
+  "h3_endpoint": "http://127.0.0.1:8189",
+  "comfyui": {
+    "version": "0.34.0",
+    "git_revision": "12d5279438bfefc058a269eae805ceab6047777f",
+    "pytorch": "2.12.1+cu130",
+    "python": "3.13.12 (main, Feb 12 2026, 00:38:53) [MSC v.1944 64 bit (AMD64)]",
+    "pinned_memory_disabled": true,
+    "dynamic_vram_disabled": false,
+    "native_h3_node_sha256": "769c9a1672d42418e99a4c16910381845be4d04992916b12763133f2e8bbffb6"
+  },
+  "runtime": {
+    "node": "24.22.1",
+    "pnpm": "11.25.0",
+    "worker_python": "3.12.14"
+  },
+  "dependencies": {
+    "web": {
+      "@hub/shared": "workspace:*",
+      "next": "16.4.3",
+      "react": "19.3.1",
+      "react-dom": "19.3.1",
+      "zod": "4.6.7",
+      "clsx": "2.1.1",
+      "tailwind-merge": "3.7.0",
+      "class-variance-authority": "0.7.1",
+      "@radix-ui/react-slot": "1.5.0",
+      "sharp": "0.34.5"
+    },
+    "worker_requirements_lock_sha256": "2e840d2cdc5404541b456dfb3d6ee41db92affdd2c614c206570b02f707b83c9",
+    "pnpm_lock_sha256": "1720917ac36387814ce231bdc2571b859b48ceff08fbae65f70d09ed76391f16"
+  },
+  "model_source": {
+    "repository": "Comfy-Org/MiniMax-H3",
+    "revision": "e5eb578a89295337b8ff433a035929ce0279e0b6",
+    "hash_note": "Hashes copied from previously verified model manifest. Capture checks existence and size only; weights were not rehashed or copied."
+  },
+  "models": [
+    {
+      "file": "diffusion_models/minimax_h3_fl2va_pruned_int8_convrot.safetensors",
+      "bytes": 20970379616,
+      "previously_verified_sha256": "e889202c41dafb67b10d67b97f0d8541508036a6090af23425a5c2615d03c47a",
+      "previous_official_match": true,
+      "exists_at_capture": true,
+      "size_matches_at_capture": true
+    },
+    {
+      "file": "diffusion_models/minimax_h3_ref2va_pruned_int8_convrot.safetensors",
+      "bytes": 20970379616,
+      "previously_verified_sha256": "9255f52b6677845ad238f20dfaafa94727053694127ab7f255c048f0f9365779",
+      "previous_official_match": true,
+      "exists_at_capture": true,
+      "size_matches_at_capture": true
+    },
+    {
+      "file": "text_encoders/qwen3vl_32b_minimax_h3_nvfp4_awq.safetensors",
+      "bytes": 15687142551,
+      "previously_verified_sha256": "35a88d51044231fe332301d7a62aa81e3f2cba62febeb446e2c1e3e0ef76f2c6",
+      "previous_official_match": true,
+      "exists_at_capture": true,
+      "size_matches_at_capture": true
+    },
+    {
+      "file": "vae/minimax_h3_video_vae_fp16.safetensors",
+      "bytes": 5207808496,
+      "previously_verified_sha256": "7c1f131492e7eddacaac9069a61b81bdd39de5cc96561e677c5eab1cdce5e522",
+      "previous_official_match": true,
+      "exists_at_capture": true,
+      "size_matches_at_capture": true
+    },
+    {
+      "file": "vae/minimax_h3_audio_vae_fp32.safetensors",
+      "bytes": 605254808,
+      "previously_verified_sha256": "8e505d95dd1561d47abd43d4238fd40d9bb1ae9e147ed0a4cba778d76ae4db48",
+      "previous_official_match": true,
+      "exists_at_capture": true,
+      "size_matches_at_capture": true
+    }
+  ],
+  "workflow_files": [
+    {
+      "path": "workflows/h3-provenance.json",
+      "bytes": 573,
+      "sha256": "975884ecce76e6a16efd77f2fd5f6091aad3fcbd234505e9390a0391aca42cf8"
+    },
+    {
+      "path": "workflows/h3_i2v_api.json",
+      "bytes": 3302,
+      "sha256": "40d46bc4db308621860fe3687b5bcafb03404affb5499c87b8ef5d3bd91bd99c"
+    },
+    {
+      "path": "workflows/h3_i2v_mapping.json",
+      "bytes": 1509,
+      "sha256": "01271f0c9558eefbae9e53a243a80bccc422f1fdcb0d26d2d3a0187f78e07b7e"
+    },
+    {
+      "path": "workflows/h3_r2v_api.json",
+      "bytes": 3388,
+      "sha256": "55a16013150a07aacc8717eb6b65ae9344b021cc62fd45ffb43b306e2baaaf6d"
+    },
+    {
+      "path": "workflows/h3_r2v_mapping.json",
+      "bytes": 1675,
+      "sha256": "f5d3291a75ace4f9cb0eccb32f68b71682d4db0facc7dda8526090f05ac00373"
+    },
+    {
+      "path": "workflows/h3_t2v_api.json",
+      "bytes": 3079,
+      "sha256": "13961f228274c4546adda35bc594dd1609a1aee9c01f314a59cc59ffb43e150b"
+    },
+    {
+      "path": "workflows/h3_t2v_mapping.json",
+      "bytes": 1423,
+      "sha256": "2d7a60ef439940109803b299f0bb09335bbfe79e6238dadc5fb025a368843bde"
+    },
+    {
+      "path": "workflows/z_image_turbo_img2img_api.json",
+      "bytes": 3023,
+      "sha256": "68e5b9c462d3258840335d0e3f36ec7d206c166a7db97d251ba84800205c5b2a"
+    },
+    {
+      "path": "workflows/z_image_turbo_img2img_mapping.json",
+      "bytes": 884,
+      "sha256": "fe736d16010701df7a39eaef8c45533dd90bf5fa56028a2c96428c2808ee83b4"
+    },
+    {
+      "path": "workflows/z_image_turbo_text_api.json",
+      "bytes": 2492,
+      "sha256": "d99326f4c93454febd05bcf7264f8e9d8a71266d5696623124a31e0d7847f74d"
+    },
+    {
+      "path": "workflows/z_image_turbo_text_mapping.json",
+      "bytes": 649,
+      "sha256": "6f9889f7590bfa901d8f85ba51bb383af81e8b57da718a8b04ac928f5b4eb503"
+    }
+  ],
+  "validation": {
+    "typescript_tests": 68,
+    "python_tests": 109,
+    "typecheck": "passed",
+    "ruff": "passed",
+    "production_build": "passed",
+    "three_modes_720p_5s_20_steps": "completed",
+    "processing_seconds": [
+      404.882,
+      444.432,
+      482.887
+    ]
+  }
+}

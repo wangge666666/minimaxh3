@@ -1,0 +1,17 @@
+{
+  "i2v": {
+    "original_file": "i2v.api.json",
+    "sha256": "2e45e35d523a9f3106c013eeac9a6022ab85cd95ee12395ed7526ccca0d4cd36",
+    "source_archive": "MiniMax-H3-交付-20261027.zip"
+  },
+  "r2v": {
+    "original_file": "r2v.api.json",
+    "sha256": "bc18d8998bb5522b7826d3b74dffc052a2a9b65bdc3446c9eb752c61cdd69994",
+    "source_archive": "MiniMax-H3-交付-20261027.zip"
+  },
+  "t2v": {
+    "original_file": "t2v.api.json",
+    "sha256": "bb49bb45990aa83a98db8f557141238e14218da77d8ae007f3c96367fbec0015",
+    "source_archive": "MiniMax-H3-交付-20261027.zip"
+  }
+}

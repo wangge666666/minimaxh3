@@ -1,0 +1,100 @@
+{
+  "version": "1",
+  "template": "h3_i2v_api.json",
+  "fields": {
+    "prompt": {
+      "node": "104",
+      "input": "prompt",
+      "type": "string"
+    },
+    "seed": {
+      "node": "15",
+      "input": "noise_seed",
+      "type": "integer",
+      "min": 0,
+      "max": 4294967295
+    },
+    "width": {
+      "node": "104",
+      "input": "width",
+      "type": "integer",
+      "enum": [
+        288,
+        384,
+        480,
+        576,
+        640,
+        720,
+        736,
+        1024,
+        1280
+      ]
+    },
+    "height": {
+      "node": "104",
+      "input": "height",
+      "type": "integer",
+      "enum": [
+        288,
+        384,
+        480,
+        576,
+        640,
+        720,
+        736,
+        1024,
+        1280
+      ]
+    },
+    "frames": {
+      "node": "104",
+      "input": "length",
+      "type": "integer",
+      "enum": [
+        107,
+        124,
+        141,
+        158,
+        175,
+        192,
+        209,
+        226,
+        243,
+        260,
+        277,
+        294,
+        311,
+        328,
+        345,
+        362
+      ]
+    },
+    "fps": {
+      "node": "91",
+      "input": "fps",
+      "type": "number",
+      "enum": [
+        24
+      ]
+    },
+    "image": {
+      "node": "114",
+      "input": "image",
+      "type": "string"
+    },
+    "steps": {
+      "node": "9",
+      "input": "steps",
+      "type": "integer",
+      "enum": [
+        12,
+        20,
+        30
+      ]
+    }
+  },
+  "outputs": [
+    "92"
+  ],
+  "output_kind": "video"
+}

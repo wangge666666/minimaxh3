@@ -1,0 +1,8 @@
+@import "tailwindcss";
+:root { --background:#f6f8fc; --foreground:#172338; --card:#fff; --muted:#e9eef7; --border:#d9e1ee; --primary:#4058da; --primary-foreground:#fff; }
+@media(prefers-color-scheme:dark) { :root { --background:#0b1020; --foreground:#e3e9f6; --card:#141d31; --muted:#1d2940; --border:#2b3955; --primary:#9aaaff; --primary-foreground:#10182e; } }
+@theme inline { --color-background:var(--background); --color-foreground:var(--foreground); --color-card:var(--card); --color-muted:var(--muted); --color-border:var(--border); --color-primary:var(--primary); --color-primary-foreground:var(--primary-foreground); }
+body { margin:0; background:var(--background); color:var(--foreground); font-family:Arial,"PingFang SC","Microsoft YaHei",sans-serif; }
+
+:root[data-theme="dark"] { --background:#0b1020; --foreground:#e3e9f6; --card:#141d31; --muted:#1d2940; --border:#2b3955; --primary:#9aaaff; --primary-foreground:#10182e; }
+:root[data-theme="light"] { --background:#f6f8fc; --foreground:#172338; --card:#fff; --muted:#e9eef7; --border:#d9e1ee; --primary:#4058da; --primary-foreground:#fff; }

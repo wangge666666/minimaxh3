@@ -1,0 +1,12 @@
+#!/bin/sh
+zero=0000000000000000000000000000000000000000
+while read -r local_ref local_sha remote_ref remote_sha; do
+  case "$remote_ref" in
+    refs/tags/v1.0.0|refs/heads/codex/baseline-v1.0)
+      if [ "$remote_sha" != "$zero" ] && [ "$local_sha" != "$remote_sha" ]; then
+        echo "Immutable baseline ref cannot be replaced or deleted: $remote_ref" >&2
+        exit 1
+      fi
+      ;;
+  esac
+done

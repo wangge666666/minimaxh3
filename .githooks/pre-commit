@@ -1,0 +1,19 @@
+#!/bin/sh
+branch=$(git symbolic-ref --quiet --short HEAD 2>/dev/null || true)
+if git rev-parse --verify --quiet refs/tags/v1.0.0 >/dev/null; then
+  case "$branch" in
+    main|master|codex/baseline-v1.0)
+      echo 'Baseline protected. Use a codex/<change-name> branch in a separate worktree.' >&2
+      exit 1
+      ;;
+  esac
+fi
+git diff --cached --name-only --diff-filter=ACMR | while IFS= read -r path; do
+  case "$path" in
+    .env.example|*/.env.example) ;;
+    .env|.env.*|*/.env|*/.env.*|*.sqlite|*.sqlite-*|*.db|*.db-*|*.log|*.pid|*.pid.json|migration/*|.local-data/*|*/.local-data/*|.runtime/*|.venv/*|node_modules/*|*/node_modules/*|*/worker-state*/*|apps/web/.next/*|docs/verification/*)
+      echo "Private or generated file cannot be committed: $path" >&2
+      exit 1
+      ;;
+  esac
+done

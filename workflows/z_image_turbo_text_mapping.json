@@ -1,0 +1,41 @@
+{
+  "version": "1",
+  "template": "z_image_turbo_text_api.json",
+  "fields": {
+    "prompt": {
+      "node": "57:27",
+      "input": "text",
+      "type": "string"
+    },
+    "seed": {
+      "node": "57:3",
+      "input": "seed",
+      "type": "integer",
+      "min": 0,
+      "max": 4294967295
+    },
+    "width": {
+      "node": "57:13",
+      "input": "width",
+      "type": "integer",
+      "enum": [
+        256,
+        512,
+        768
+      ]
+    },
+    "height": {
+      "node": "57:13",
+      "input": "height",
+      "type": "integer",
+      "enum": [
+        256,
+        512,
+        768
+      ]
+    }
+  },
+  "outputs": [
+    "9"
+  ]
+}
