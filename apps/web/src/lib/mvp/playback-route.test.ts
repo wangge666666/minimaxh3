@@ -15,6 +15,25 @@ test("状态 API 返回全局未完成数量和 500 条上限",async()=>{
  db.create({requestId:randomUUID(),mode:"h3_t2v",prompt:"queue",width:640,height:360,seed:1,denoise:1},null);
  const state=await (await GET(request("state"),context(["state"]))).json();
  expect(state.queue).toEqual({active:1,limit:500});
+ expect(state.workflows.filter((o:{engine:string})=>o.engine==="director")).toHaveLength(3);
+ expect(state.workflows.filter((o:{engine:string;ready:boolean})=>o.engine==="director").every((o:{ready:boolean})=>!o.ready)).toBe(true);
+});
+test("API 拒绝未就绪引擎和浏览器版本，原生元信息随领取传递且媒体上传仍兼容",async()=>{
+ const params={requestId:randomUUID(),mode:"h3_t2v",prompt:"test",width:640,height:360,seed:1,denoise:1};
+ for(const [extra,status] of [[{workflowEngine:"director"},503],[{workflowEngine:"unknown"},400],[{workflowRevision:"fake"},400]] as const) {
+   const form=new FormData();form.set("params",JSON.stringify({...params,...extra}));
+   expect((await POST(request("jobs","POST",form,{origin:"http://127.0.0.1:3000"}),context(["jobs"]))).status).toBe(status);
+ }
+ expect(db.state().jobs).toHaveLength(0);
+ const form=new FormData();form.set("params",JSON.stringify(params));
+ const accepted=await POST(request("jobs","POST",form,{origin:"http://127.0.0.1:3000"}),context(["jobs"]));
+ expect(accepted.status).toBe(201);const job=await accepted.json();
+ const claim=await POST(request("worker/claim","POST",JSON.stringify({worker_id:randomUUID(),available_modes:["h3_t2v"]}),{authorization:`Bearer ${token}`}),context(["worker","claim"]));
+ const claimed=(await claim.json()).job;
+ expect(claimed).toMatchObject({workflowEngine:"native",workflowRevision:job.workflowRevision,workflowOutputNodeIds:job.workflowOutputNodeIds});
+ db.update(job.id,claimed.lease,"running","accepted","prompt");db.update(job.id,claimed.lease,"uploading","saving");
+ const done=await POST(request("worker/complete","POST",new Uint8Array(mp4()),{authorization:`Bearer ${token}`,"x-job-id":job.id,"x-lease-id":claimed.lease}),context(["worker","complete"]));
+ expect(done.status).toBe(200);expect((await done.json()).workflowRevision).toBe(job.workflowRevision);
 });
 test("关闭图片生成后拒绝新增图片，保留历史查询和原提交编号",async()=>{
  vi.stubEnv("MVP_IMAGE_GENERATION_ENABLED","0");

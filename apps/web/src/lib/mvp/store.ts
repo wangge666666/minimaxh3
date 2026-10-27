@@ -1,10 +1,11 @@
 import { DatabaseSync } from "node:sqlite";
 import { mkdirSync } from "node:fs";
-import { join } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { randomUUID } from "node:crypto";
 import { isVideoMode, type CreateJob, type Job } from "./schema";
 import { checkAssetRoles, type Asset } from "./h3";
 import { maxActiveJobs, recentHistoryLimit } from "./queue";
+import { pinWorkflow } from "./workflows";
 export type StoredAsset = Asset & { data: Uint8Array };
 
 export class StoreError extends Error { constructor(message: string, public status = 409) { super(message); } }
@@ -54,7 +55,7 @@ export class JobStore {
   publicJob(row: Row): Job {
     const position = row.status === "queued" ? Number((this.db.prepare("SELECT count(*) AS n FROM jobs WHERE status='queued' AND (created_at < ? OR (created_at=? AND rowid <= (SELECT rowid FROM jobs WHERE id=?)))").get(row.created_at,row.created_at,row.id) as { n: number }).n) : null;
     const params=JSON.parse(row.params);
-    return { ...params, assets:this.assets(row), has_poster:!!row.poster, media_type:isVideoMode(params.mode)?"video":"image", id: row.id, status: row.status, created_at: row.created_at, updated_at: row.updated_at, message: row.message, prompt_id: row.prompt_id, queue_position: position };
+    return { ...params, workflowEngine:params.workflowEngine===undefined?"native":params.workflowEngine, assets:this.assets(row), has_poster:!!row.poster, media_type:isVideoMode(params.mode)?"video":"image", id: row.id, status: row.status, created_at: row.created_at, updated_at: row.updated_at, message: row.message, prompt_id: row.prompt_id, queue_position: position };
   }
   findByRequestId(requestId:string):Job|null {
     const row=this.db.prepare("SELECT id,params,status,created_at,updated_at,message,prompt_id,lease,worker_id,lease_until,CASE WHEN input IS NOT NULL THEN x'01' ELSE NULL END AS input,NULL AS output,CASE WHEN poster IS NOT NULL THEN x'01' ELSE NULL END AS poster FROM jobs WHERE request_id=?").get(requestId) as Row|undefined;
@@ -80,12 +81,13 @@ export class JobStore {
       this.expire();
       const existing = this.db.prepare("SELECT * FROM jobs WHERE request_id=?").get(params.requestId) as Row | undefined;
       if (existing) return this.publicJob(existing);
+      const pinned = pinWorkflow(params);
       const active = this.db.prepare("SELECT count(*) AS n FROM jobs WHERE status IN ('queued','claimed','running','uploading')").get() as {n:number};
       if (active.n >= maxActiveJobs) throw new StoreError(`最多保留 ${maxActiveJobs} 个未完成任务，请等待完成后再提交`, 429);
       const legacy = image ? [{key:params.mode==="h3_i2v"?"first_frame":params.mode==="h3_r2v"?"ref_image_0":"reference",kind:"image" as const}] : [];
       try { checkAssetRoles(params.mode, [...assets,...legacy]); } catch (e) { throw new StoreError((e as Error).message,400); }
       const id = randomUUID(), now = Date.now();
-      this.db.prepare("INSERT INTO jobs(id,request_id,params,status,created_at,updated_at,input) VALUES(?,?,?,'queued',?,?,?)").run(id,params.requestId,JSON.stringify(params),now,now,image);
+      this.db.prepare("INSERT INTO jobs(id,request_id,params,status,created_at,updated_at,input) VALUES(?,?,?,'queued',?,?,?)").run(id,params.requestId,JSON.stringify(pinned),now,now,image);
       const insert=this.db.prepare("INSERT INTO job_assets(job_id,key,kind,name,mime,data) VALUES(?,?,?,?,?,?)");
       for (const asset of assets) insert.run(id,asset.key,asset.kind,asset.name,asset.mime,asset.data);
       return this.publicJob(this.row(id));
@@ -153,6 +155,6 @@ export class JobStore {
 }
 let store: JobStore | undefined;
 export function getStore() {
-  if (!store) { const dir=join(process.cwd(),".local-data"); mkdirSync(dir,{recursive:true,mode:0o700}); store=new JobStore(join(dir,"mvp.sqlite")); }
+  if (!store) { const path=resolve(/* turbopackIgnore: true */ process.env.MVP_DATABASE_PATH || join(process.cwd(),".local-data","mvp.sqlite")); mkdirSync(dirname(path),{recursive:true,mode:0o700}); store=new JobStore(path); }
   return store;
 }

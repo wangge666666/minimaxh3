@@ -1,6 +1,7 @@
 import { z, ZodError } from "zod";
 import sharp from "sharp";
-import { createSchema, isVideoMode, modes } from "@/lib/mvp/schema";
+import { createSchema, storedParamsSchema, isVideoMode, modes } from "@/lib/mvp/schema";
+import { workflowOptions, WorkflowUnavailable } from "@/lib/mvp/workflows";
 import { totalAssetBytes } from "@/lib/mvp/h3";
 import { parseAssets } from "@/lib/mvp/uploads";
 import { getStore, StoreError } from "@/lib/mvp/store";
@@ -17,7 +18,7 @@ async function handle(request: Request, context: {params:Promise<{path?:string[]
     const parts=(await context.params).path??[], action=parts.join("/"), method=request.method;
     const worker=parts[0]==="worker"; if(worker) requireWorker(request);
     const db=getStore();
-    if (method==="GET" && action==="state") return json({...db.state(),features:{imageGeneration:process.env.MVP_IMAGE_GENERATION_ENABLED!=="0"}});
+    if (method==="GET" && action==="state") return json({...db.state(),features:{imageGeneration:process.env.MVP_IMAGE_GENERATION_ENABLED!=="0"},workflows:workflowOptions()});
     if(method==="GET" && parts[0]==="jobs" && parts[1]==="request" && parts.length===3) {
       const job=db.findByRequestId(uuid.parse(parts[2]));
       if(!job) throw new StoreError("此提交尚未创建任务",404);
@@ -61,7 +62,7 @@ async function handle(request: Request, context: {params:Promise<{path?:string[]
     }
     if (action==="worker/complete") {
       const id=uuid.parse(request.headers.get("x-job-id")),lease=uuid.parse(request.headers.get("x-lease-id"));
-      const row=db.owned(id,lease); const params=createSchema.parse(JSON.parse(row.params));
+      const row=db.owned(id,lease); const params=storedParamsSchema.parse(JSON.parse(row.params));
       const video=isVideoMode(params.mode);
       const multipart=video && request.headers.get("content-type")?.startsWith("multipart/form-data");
       let raw=await readLimited(request,(video?64:16)*1024*1024+(multipart?512*1024:0));
@@ -94,6 +95,7 @@ async function handle(request: Request, context: {params:Promise<{path?:string[]
     if(action==="worker/progress") { const p=progressSchema.parse(body); return json(db.update(p.id,p.lease,p.status,p.message,p.prompt_id)); }
     throw new StoreError("接口不存在",404);
   } catch(error) {
+    if(error instanceof WorkflowUnavailable) return json({error:error.message},503);
     if(error instanceof StoreError) return json({error:error.message},error.status);
     if(error instanceof ZodError) return json({error:error.issues.map(i=>`${i.path.join(".")}: ${i.message}`).join("；")},400);
     if(error instanceof SyntaxError || error instanceof TypeError) return json({error:"请求格式不正确"},400);

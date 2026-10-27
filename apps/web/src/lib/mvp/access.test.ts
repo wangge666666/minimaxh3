@@ -2,6 +2,14 @@ import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import { requireLocal, requireWorker, readLimited } from "./access";
 beforeEach(()=>{vi.stubEnv("MVP_LOCAL_ENABLED","1");vi.stubEnv("VERCEL","");vi.stubEnv("MVP_ALLOWED_ORIGIN","https://studio.example.ts.net:8443");vi.stubEnv("MVP_WORKER_TOKEN","x".repeat(32));});
 afterEach(()=>vi.unstubAllEnvs());
+test("隔离端口只开放明确配置的回环来源，非法配置及跨站来源被拒绝",()=>{
+ expect(()=>requireLocal(req("127.0.0.1:3100"))).toThrow();
+ vi.stubEnv("MVP_LOCAL_PORT","3100");
+ expect(()=>requireLocal(req("127.0.0.1:3100","http://127.0.0.1:3100","POST"))).not.toThrow();
+ expect(()=>requireLocal(req("127.0.0.1:3100","http://127.0.0.1:3000","POST"))).toThrow();
+ expect(()=>requireLocal(req("0.0.0.0:3100"))).toThrow();
+ for(const port of ["0","65536","3100.evil"]) {vi.stubEnv("MVP_LOCAL_PORT",port);expect(()=>requireLocal(req("127.0.0.1:3000"))).toThrow("端口配置");}
+});
 function req(host:string,origin?:string,method="GET"){return new Request(`http://${host}/api/mvp/state`,{method,headers:{host,...(origin?{origin}:{})}});}
 test("允许明确配置的私网入口，拒绝其他主机",()=>{expect(()=>requireLocal(req("studio.example.ts.net:8443","https://studio.example.ts.net:8443","POST"))).not.toThrow();expect(()=>requireLocal(req("evil.example"))).toThrow();});
 test("播放器 HEAD 探测与 GET 采用相同私网主机校验",()=>{expect(()=>requireLocal(req("127.0.0.1:3000",undefined,"HEAD"))).not.toThrow();expect(()=>requireLocal(req("evil.example",undefined,"HEAD"))).toThrow();});
