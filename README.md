@@ -4,6 +4,9 @@ A private video studio using Next.js, a SQLite queue, an independent Python
 Worker and native MiniMax H3 in local ComfyUI. The validated source baseline is
 **[v1.0.0](BASELINE-v1.0.md)**.
 
+开发接手先读：[项目进度与运行逻辑](PROJECT-OVERVIEW.md)，再读
+[导演台并行分工](COLLABORATION-DIRECTOR.md)。说明中区分生产基线、应用候选与工作流草稿。
+
 Browser -> private HTTPS website -> SQLite queue -> Worker -> local H3 -> MP4.
 It supports text-to-video, first/last frames, image/video/audio references,
 upload progress/recovery, persistent history, posters, playback and downloads.
