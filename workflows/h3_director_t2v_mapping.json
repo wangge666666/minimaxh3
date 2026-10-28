@@ -1,0 +1,100 @@
+{
+  "version": "1",
+  "revision": "director-v1.0.0",
+  "template": "h3_director_t2v_api.json",
+  "fields": {
+    "prompt": {
+      "node": "6",
+      "input": "global_prompt",
+      "type": "string"
+    },
+    "seed": {
+      "node": "6",
+      "input": "seed",
+      "type": "integer",
+      "min": 0,
+      "max": 4294967295
+    },
+    "width": {
+      "node": "6",
+      "input": "width",
+      "type": "integer",
+      "enum": [
+        384,
+        576,
+        640,
+        736,
+        1024,
+        1280
+      ]
+    },
+    "height": {
+      "node": "6",
+      "input": "height",
+      "type": "integer",
+      "enum": [
+        384,
+        576,
+        640,
+        736,
+        1024,
+        1280
+      ]
+    },
+    "frames": {
+      "node": "6",
+      "input": "total_frames",
+      "type": "integer",
+      "enum": [
+        107,
+        124,
+        141,
+        158,
+        175,
+        192,
+        209,
+        226,
+        243,
+        260,
+        277,
+        294,
+        311,
+        328,
+        345,
+        362
+      ]
+    },
+    "fps": {
+      "node": "6",
+      "input": "frame_rate",
+      "type": "number",
+      "enum": [
+        24
+      ]
+    },
+    "steps": {
+      "node": "6",
+      "input": "steps",
+      "type": "integer",
+      "enum": [
+        12,
+        20,
+        30
+      ]
+    }
+  },
+  "outputs": [
+    "8"
+  ],
+  "output_kind": "video",
+  "derivedFields": {
+    "5.prompt": "prompt",
+    "5.duration_sec": "frames / fps",
+    "6.timeline_data": "fixed canvas; generate audio; one external group",
+    "6.ref_max_size": "max(aligned width, aligned height)"
+  },
+  "assetTarget": {
+    "node": "5",
+    "port": "i2v_groups"
+  }
+}

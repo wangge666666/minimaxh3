@@ -99,14 +99,26 @@ def attach_h3_assets(workflow: dict, mode: str, assets: list[dict], video_audio:
 def load_workflow(directory: Path, mode: str, values: dict) -> tuple[dict, list[str]]:
     if mode not in {"text", "img2img", "h3_i2v", "h3_r2v", "h3_t2v"}:
         raise WorkflowError("不支持的工作流")
+    engine = values.get("workflowEngine", "native")
+    if engine not in ("native", "director"):
+        raise WorkflowError("不支持的工作流引擎")
+    if engine == "director":
+        from comfy_hub_worker.director_workflow import load_director_workflow
+
+        return load_director_workflow(directory, mode, values)
+    if values.get("workflowRevision") is not None:
+        from comfy_hub_worker.director_contract import native_workflow_revision
+
+        if values["workflowRevision"] != native_workflow_revision(directory, mode):
+            raise WorkflowError("原生工作流修订不可用")
     if mode.startswith("h3_"):
         values = h3_parameters(values)
     stem = mode if mode.startswith("h3_") else f"z_image_turbo_{mode}"
-    mapping = json.loads((directory / f"{stem}_mapping.json").read_text())
+    mapping = json.loads((directory / f"{stem}_mapping.json").read_text(encoding="utf-8"))
     template = (directory / mapping["template"]).resolve()
     if template.parent != directory.resolve():
         raise WorkflowError("模板路径越界")
-    workflow = copy.deepcopy(json.loads(template.read_text()))
+    workflow = copy.deepcopy(json.loads(template.read_text(encoding="utf-8")))
     if mapping.get("version") != "1":
         raise WorkflowError("不支持的映射版本")
     for name, spec in mapping["fields"].items():
@@ -136,4 +148,6 @@ def load_workflow(directory: Path, mode: str, values: dict) -> tuple[dict, list[
         expected_output = "SaveVideo" if mapping.get("output_kind") == "video" else "SaveImage"
         if workflow.get(node_id, {}).get("class_type") != expected_output:
             raise WorkflowError(f"输出节点必须为 {expected_output}")
+    if values.get("workflowOutputNodeIds") not in (None, mapping["outputs"]):
+        raise WorkflowError("任务固定的输出与工作流版本不匹配")
     return workflow, mapping["outputs"]

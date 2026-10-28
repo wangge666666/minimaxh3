@@ -1,0 +1,16 @@
+--- a/director/executor_core.py
++++ b/director/executor_core.py
+@@ -815,6 +815,13 @@
+             audio_idxs = usable_ref_audio_indices(
+                 seg.ref_audios, cache=getattr(plan, "audio_decode_cache", None),
+             )
++            # Preserve native audio labels: paired video soundtracks, then standalone audio.
++            paired = set(usable_ref_audio_indices(
++                getattr(seg, "ref_video_audios", None) or [],
++                cache=getattr(plan, "audio_decode_cache", None),
++            ))
++            video_slots = {int(v.index) for v in (getattr(seg, "ref_videos", None) or [])}
++            audio_idxs = list(range(len(audio_idxs) + len(paired & video_slots)))
+             positive_prompt = drop_unusable_audio_prompt_tags(positive_prompt, audio_idxs)
+             positive_prompt = reinforce_r2v_prompt(
+                 positive_prompt,

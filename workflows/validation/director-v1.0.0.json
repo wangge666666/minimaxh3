@@ -1,0 +1,1297 @@
+{
+  "schemaVersion": 1,
+  "revision": "director-v1.0.0",
+  "capturedDate": "2026-10-28",
+  "timezone": "Asia/Taipei",
+  "scope": "Real GPU smoke acceptance of the workflow package; application rollout not performed",
+  "runtime": {
+    "comfyui": "0.34.0",
+    "pytorch": "2.12.1+cu130",
+    "gpu": "RTX PRO 4500 Blackwell 32GB",
+    "workerPython": "3.12.14",
+    "isolatedComfyPython": "3.13.12",
+    "disablePinnedMemory": true,
+    "dynamicVram": true,
+    "customNodeWhitelist": [
+      "ComfyUI_MiniMaxH3_Director"
+    ]
+  },
+  "releaseAcceptanceCases": [
+    {
+      "caseId": "fixed-director-t2v",
+      "mode": "h3_t2v",
+      "engine": "director",
+      "passed": true,
+      "promptId": "42ad1c21-001b-44d7-98a4-50fea838d940",
+      "wallSecondsIncludingValidation": 62.681,
+      "settings": {
+        "seed": 42,
+        "width": 640,
+        "height": 360,
+        "frames": 124,
+        "fps": 24,
+        "steps": 20,
+        "durationSeconds": 5,
+        "sound": true,
+        "referenceVideoAudio": true,
+        "refImageSize": "match"
+      },
+      "assetKeys": [],
+      "outputNodeIds": [
+        "8"
+      ],
+      "raw": {
+        "width": 640,
+        "height": 384,
+        "fps": 24.0,
+        "duration": 5.17,
+        "codec": "h264",
+        "audio_codec": "aac"
+      },
+      "final": {
+        "width": 640,
+        "height": 360,
+        "fps": 24.0,
+        "duration": 5.17,
+        "codec": "h264",
+        "audio_codec": "aac"
+      },
+      "muted": {
+        "width": 640,
+        "height": 360,
+        "fps": 24.0,
+        "duration": 5.17,
+        "codec": "h264",
+        "audio_codec": null
+      },
+      "frameCountVerified": 124,
+      "bytes": 1188802,
+      "sha256": "5e6e75c34d986ebbda2da3acbf1893c94d49955a8dfdcec096c4ec835050f6d7",
+      "posterDimensions": [
+        640,
+        360
+      ],
+      "audioMeanDb": -51.4,
+      "audioPeakDb": -32.2,
+      "checks": {
+        "completeAudioVideoDecode": true,
+        "frameCount": true,
+        "h264Aac": true,
+        "alignedCanvasAndExactCrop": true,
+        "faststart": true,
+        "soundOffExport": true,
+        "posterJpegDecode": true,
+        "existingComfyClientDownload": true
+      },
+      "conditioningObservation": {
+        "conditioning_input": {
+          "task": "t2v",
+          "length": 124,
+          "audio_prompt_tags": [],
+          "inputs": {
+            "first_frame": null,
+            "last_frame": null,
+            "ref_images": null,
+            "ref_videos": null,
+            "ref_video_audios": null,
+            "ref_audios": null
+          }
+        },
+        "conditioning_return": {
+          "task": "t2v",
+          "positive_metadata": [
+            "pooled_output",
+            "minimax_token_tags"
+          ],
+          "reference_blocks": [],
+          "hint": "t2v — Text-to AV (no keyframes or references) (MiniMax H3)"
+        },
+        "sampling_start": {
+          "seed": 42,
+          "steps": 20,
+          "positive_present": true
+        }
+      }
+    },
+    {
+      "caseId": "fixed-director-i2v",
+      "mode": "h3_i2v",
+      "engine": "director",
+      "passed": true,
+      "promptId": "fe298bf6-6c83-4bc6-82ce-a8b30ac7bab0",
+      "wallSecondsIncludingValidation": 69.253,
+      "settings": {
+        "seed": 42,
+        "width": 640,
+        "height": 360,
+        "frames": 124,
+        "fps": 24,
+        "steps": 20,
+        "durationSeconds": 5,
+        "sound": true,
+        "referenceVideoAudio": true,
+        "refImageSize": "match"
+      },
+      "assetKeys": [
+        "first_frame",
+        "last_frame"
+      ],
+      "outputNodeIds": [
+        "8"
+      ],
+      "raw": {
+        "width": 640,
+        "height": 384,
+        "fps": 24.0,
+        "duration": 5.17,
+        "codec": "h264",
+        "audio_codec": "aac"
+      },
+      "final": {
+        "width": 640,
+        "height": 360,
+        "fps": 24.0,
+        "duration": 5.17,
+        "codec": "h264",
+        "audio_codec": "aac"
+      },
+      "muted": {
+        "width": 640,
+        "height": 360,
+        "fps": 24.0,
+        "duration": 5.17,
+        "codec": "h264",
+        "audio_codec": null
+      },
+      "frameCountVerified": 124,
+      "bytes": 186793,
+      "sha256": "093560abdcf7775c8ec554ac7e7263b89714deba309dd52ad6f522d0bbc83910",
+      "posterDimensions": [
+        640,
+        360
+      ],
+      "audioMeanDb": -23.9,
+      "audioPeakDb": -7.0,
+      "checks": {
+        "completeAudioVideoDecode": true,
+        "frameCount": true,
+        "h264Aac": true,
+        "alignedCanvasAndExactCrop": true,
+        "faststart": true,
+        "soundOffExport": true,
+        "posterJpegDecode": true,
+        "existingComfyClientDownload": true
+      },
+      "conditioningObservation": {
+        "conditioning_input": {
+          "task": "fl2v",
+          "length": 124,
+          "audio_prompt_tags": [],
+          "inputs": {
+            "first_frame": {
+              "shape": [
+                1,
+                384,
+                640,
+                3
+              ],
+              "numel": 737280
+            },
+            "last_frame": {
+              "shape": [
+                1,
+                384,
+                640,
+                3
+              ],
+              "numel": 737280
+            },
+            "ref_images": null,
+            "ref_videos": null,
+            "ref_video_audios": null,
+            "ref_audios": null
+          }
+        },
+        "conditioning_return": {
+          "task": "fl2v",
+          "positive_metadata": [
+            "pooled_output",
+            "minimax_token_tags",
+            "minimax_keyframes"
+          ],
+          "reference_blocks": [],
+          "hint": "fl2v — First+last keyframe AV (MiniMax H3)"
+        },
+        "sampling_start": {
+          "seed": 42,
+          "steps": 20,
+          "positive_present": true
+        }
+      }
+    },
+    {
+      "caseId": "fixed-director-r2v-image",
+      "mode": "h3_r2v",
+      "engine": "director",
+      "passed": true,
+      "promptId": "20670539-3b46-48f8-9913-667cdb93978d",
+      "wallSecondsIncludingValidation": 65.383,
+      "settings": {
+        "seed": 42,
+        "width": 640,
+        "height": 360,
+        "frames": 124,
+        "fps": 24,
+        "steps": 20,
+        "durationSeconds": 5,
+        "sound": true,
+        "referenceVideoAudio": true,
+        "refImageSize": "match"
+      },
+      "assetKeys": [
+        "ref_image_0"
+      ],
+      "outputNodeIds": [
+        "8"
+      ],
+      "raw": {
+        "width": 640,
+        "height": 384,
+        "fps": 24.0,
+        "duration": 5.17,
+        "codec": "h264",
+        "audio_codec": "aac"
+      },
+      "final": {
+        "width": 640,
+        "height": 360,
+        "fps": 24.0,
+        "duration": 5.17,
+        "codec": "h264",
+        "audio_codec": "aac"
+      },
+      "muted": {
+        "width": 640,
+        "height": 360,
+        "fps": 24.0,
+        "duration": 5.17,
+        "codec": "h264",
+        "audio_codec": null
+      },
+      "frameCountVerified": 124,
+      "bytes": 187467,
+      "sha256": "eb8324fa1797aaf1f70e1e467cb42bb82d4c2a4eb417b0be3b1869c1153aaa74",
+      "posterDimensions": [
+        640,
+        360
+      ],
+      "audioMeanDb": -22.5,
+      "audioPeakDb": -3.0,
+      "checks": {
+        "completeAudioVideoDecode": true,
+        "frameCount": true,
+        "h264Aac": true,
+        "alignedCanvasAndExactCrop": true,
+        "faststart": true,
+        "soundOffExport": true,
+        "posterJpegDecode": true,
+        "existingComfyClientDownload": true
+      },
+      "conditioningObservation": {
+        "conditioning_input": {
+          "task": "r2v",
+          "length": 124,
+          "audio_prompt_tags": [],
+          "inputs": {
+            "first_frame": null,
+            "last_frame": null,
+            "ref_images": {
+              "ref_image_0": {
+                "shape": [
+                  1,
+                  384,
+                  640,
+                  3
+                ],
+                "numel": 737280
+              }
+            },
+            "ref_videos": null,
+            "ref_video_audios": null,
+            "ref_audios": null
+          }
+        },
+        "conditioning_return": {
+          "task": "r2v",
+          "positive_metadata": [
+            "pooled_output",
+            "minimax_token_tags",
+            "minimax_refs"
+          ],
+          "reference_blocks": [
+            {
+              "kind": "image",
+              "latent_h": 24,
+              "latent_w": 40,
+              "latent": {
+                "shape": [
+                  1,
+                  24,
+                  1,
+                  24,
+                  40
+                ],
+                "numel": 23040
+              }
+            }
+          ],
+          "hint": "r2v — Reference-to AV — subject images (+ optional tags) in prompt (MiniMax H3) (~1 ref image(s), 0 ref video(s))"
+        },
+        "sampling_start": {
+          "seed": 42,
+          "steps": 20,
+          "positive_present": true
+        }
+      }
+    },
+    {
+      "caseId": "fixed-director-r2v-video",
+      "mode": "h3_r2v",
+      "engine": "director",
+      "passed": true,
+      "promptId": "6d4705df-d841-47de-bd69-f50160a88ad9",
+      "wallSecondsIncludingValidation": 95.474,
+      "settings": {
+        "seed": 42,
+        "width": 640,
+        "height": 360,
+        "frames": 124,
+        "fps": 24,
+        "steps": 20,
+        "durationSeconds": 5,
+        "sound": true,
+        "referenceVideoAudio": true,
+        "refImageSize": "match"
+      },
+      "assetKeys": [
+        "ref_video_0"
+      ],
+      "outputNodeIds": [
+        "8"
+      ],
+      "raw": {
+        "width": 640,
+        "height": 384,
+        "fps": 24.0,
+        "duration": 5.17,
+        "codec": "h264",
+        "audio_codec": "aac"
+      },
+      "final": {
+        "width": 640,
+        "height": 360,
+        "fps": 24.0,
+        "duration": 5.17,
+        "codec": "h264",
+        "audio_codec": "aac"
+      },
+      "muted": {
+        "width": 640,
+        "height": 360,
+        "fps": 24.0,
+        "duration": 5.17,
+        "codec": "h264",
+        "audio_codec": null
+      },
+      "frameCountVerified": 124,
+      "bytes": 140729,
+      "sha256": "93252abbb90227aca35dfd3cfe381c1b1f8aa5d84612edb2fb337d5f16232fe7",
+      "posterDimensions": [
+        640,
+        360
+      ],
+      "audioMeanDb": -24.2,
+      "audioPeakDb": -5.3,
+      "checks": {
+        "completeAudioVideoDecode": true,
+        "frameCount": true,
+        "h264Aac": true,
+        "alignedCanvasAndExactCrop": true,
+        "faststart": true,
+        "soundOffExport": true,
+        "posterJpegDecode": true,
+        "existingComfyClientDownload": true
+      },
+      "conditioningObservation": {
+        "conditioning_input": {
+          "task": "r2v",
+          "length": 124,
+          "audio_prompt_tags": [
+            "<Audio 1>"
+          ],
+          "inputs": {
+            "first_frame": null,
+            "last_frame": null,
+            "ref_images": null,
+            "ref_videos": {
+              "ref_video_0": {
+                "shape": [
+                  47,
+                  384,
+                  640,
+                  3
+                ],
+                "numel": 34652160
+              }
+            },
+            "ref_video_audios": {
+              "ref_video_audio_0": {
+                "waveform": {
+                  "shape": [
+                    1,
+                    2,
+                    64512
+                  ],
+                  "numel": 129024
+                },
+                "sample_rate": 32000
+              }
+            },
+            "ref_audios": null
+          }
+        },
+        "conditioning_return": {
+          "task": "r2v",
+          "positive_metadata": [
+            "pooled_output",
+            "minimax_token_tags",
+            "minimax_refs"
+          ],
+          "reference_blocks": [
+            {
+              "kind": "video_audio",
+              "latent_t": 12,
+              "latent_h": 24,
+              "latent_w": 40,
+              "ref_audio_t": 80,
+              "latent": {
+                "shape": [
+                  1,
+                  24,
+                  12,
+                  24,
+                  40
+                ],
+                "numel": 276480
+              },
+              "audio_latent": {
+                "shape": [
+                  1,
+                  32,
+                  2,
+                  80
+                ],
+                "numel": 5120
+              }
+            }
+          ],
+          "hint": "r2v — Reference-to AV — subject images (+ optional tags) in prompt (MiniMax H3) (~0 ref image(s), 1 ref video(s))"
+        },
+        "sampling_start": {
+          "seed": 42,
+          "steps": 20,
+          "positive_present": true
+        }
+      }
+    },
+    {
+      "caseId": "fixed-director-r2v-audio",
+      "mode": "h3_r2v",
+      "engine": "director",
+      "passed": true,
+      "promptId": "df9eae22-8939-4f0b-9f32-6cb3aea6a703",
+      "wallSecondsIncludingValidation": 62.971,
+      "settings": {
+        "seed": 42,
+        "width": 640,
+        "height": 360,
+        "frames": 124,
+        "fps": 24,
+        "steps": 20,
+        "durationSeconds": 5,
+        "sound": true,
+        "referenceVideoAudio": true,
+        "refImageSize": "match"
+      },
+      "assetKeys": [
+        "ref_audio_0"
+      ],
+      "outputNodeIds": [
+        "8"
+      ],
+      "raw": {
+        "width": 640,
+        "height": 384,
+        "fps": 24.0,
+        "duration": 5.17,
+        "codec": "h264",
+        "audio_codec": "aac"
+      },
+      "final": {
+        "width": 640,
+        "height": 360,
+        "fps": 24.0,
+        "duration": 5.17,
+        "codec": "h264",
+        "audio_codec": "aac"
+      },
+      "muted": {
+        "width": 640,
+        "height": 360,
+        "fps": 24.0,
+        "duration": 5.17,
+        "codec": "h264",
+        "audio_codec": null
+      },
+      "frameCountVerified": 124,
+      "bytes": 712811,
+      "sha256": "273df9aea5b8f1630585b95189ac77303e9ba115eae34476cde11e7dc5433757",
+      "posterDimensions": [
+        640,
+        360
+      ],
+      "audioMeanDb": -23.1,
+      "audioPeakDb": -7.1,
+      "checks": {
+        "completeAudioVideoDecode": true,
+        "frameCount": true,
+        "h264Aac": true,
+        "alignedCanvasAndExactCrop": true,
+        "faststart": true,
+        "soundOffExport": true,
+        "posterJpegDecode": true,
+        "existingComfyClientDownload": true
+      },
+      "conditioningObservation": {
+        "conditioning_input": {
+          "task": "r2v",
+          "length": 124,
+          "audio_prompt_tags": [
+            "<Audio 1>"
+          ],
+          "inputs": {
+            "first_frame": null,
+            "last_frame": null,
+            "ref_images": null,
+            "ref_videos": null,
+            "ref_video_audios": null,
+            "ref_audios": {
+              "ref_audio_0": {
+                "waveform": {
+                  "shape": [
+                    1,
+                    2,
+                    64000
+                  ],
+                  "numel": 128000
+                },
+                "sample_rate": 32000
+              }
+            }
+          }
+        },
+        "conditioning_return": {
+          "task": "r2v",
+          "positive_metadata": [
+            "pooled_output",
+            "minimax_token_tags",
+            "minimax_refs"
+          ],
+          "reference_blocks": [
+            {
+              "kind": "audio",
+              "ref_audio_t": 80,
+              "audio_latent": {
+                "shape": [
+                  1,
+                  32,
+                  2,
+                  80
+                ],
+                "numel": 5120
+              }
+            }
+          ],
+          "hint": "r2v — Text-to AV (no keyframes or references) (MiniMax H3)"
+        },
+        "sampling_start": {
+          "seed": 42,
+          "steps": 20,
+          "positive_present": true
+        }
+      }
+    },
+    {
+      "caseId": "fixed-director-r2v-combined",
+      "mode": "h3_r2v",
+      "engine": "director",
+      "passed": true,
+      "promptId": "d79c5f4e-f3a8-44f7-81d6-0203f15aac9b",
+      "wallSecondsIncludingValidation": 103.43,
+      "settings": {
+        "seed": 42,
+        "width": 640,
+        "height": 360,
+        "frames": 124,
+        "fps": 24,
+        "steps": 20,
+        "durationSeconds": 5,
+        "sound": true,
+        "referenceVideoAudio": true,
+        "refImageSize": "match"
+      },
+      "assetKeys": [
+        "ref_image_0",
+        "ref_video_0",
+        "ref_audio_0"
+      ],
+      "outputNodeIds": [
+        "8"
+      ],
+      "raw": {
+        "width": 640,
+        "height": 384,
+        "fps": 24.0,
+        "duration": 5.17,
+        "codec": "h264",
+        "audio_codec": "aac"
+      },
+      "final": {
+        "width": 640,
+        "height": 360,
+        "fps": 24.0,
+        "duration": 5.17,
+        "codec": "h264",
+        "audio_codec": "aac"
+      },
+      "muted": {
+        "width": 640,
+        "height": 360,
+        "fps": 24.0,
+        "duration": 5.17,
+        "codec": "h264",
+        "audio_codec": null
+      },
+      "frameCountVerified": 124,
+      "bytes": 173053,
+      "sha256": "2c208a854aa915b805022c1616509d84b9d2880b6ec8ff5b4324207d26d0fc1d",
+      "posterDimensions": [
+        640,
+        360
+      ],
+      "audioMeanDb": -22.6,
+      "audioPeakDb": -7.7,
+      "checks": {
+        "completeAudioVideoDecode": true,
+        "frameCount": true,
+        "h264Aac": true,
+        "alignedCanvasAndExactCrop": true,
+        "faststart": true,
+        "soundOffExport": true,
+        "posterJpegDecode": true,
+        "existingComfyClientDownload": true
+      },
+      "conditioningObservation": {
+        "conditioning_input": {
+          "task": "r2v",
+          "length": 124,
+          "audio_prompt_tags": [
+            "<Audio 2>"
+          ],
+          "inputs": {
+            "first_frame": null,
+            "last_frame": null,
+            "ref_images": {
+              "ref_image_0": {
+                "shape": [
+                  1,
+                  384,
+                  640,
+                  3
+                ],
+                "numel": 737280
+              }
+            },
+            "ref_videos": {
+              "ref_video_0": {
+                "shape": [
+                  47,
+                  384,
+                  640,
+                  3
+                ],
+                "numel": 34652160
+              }
+            },
+            "ref_video_audios": {
+              "ref_video_audio_0": {
+                "waveform": {
+                  "shape": [
+                    1,
+                    2,
+                    64512
+                  ],
+                  "numel": 129024
+                },
+                "sample_rate": 32000
+              }
+            },
+            "ref_audios": {
+              "ref_audio_0": {
+                "waveform": {
+                  "shape": [
+                    1,
+                    2,
+                    64000
+                  ],
+                  "numel": 128000
+                },
+                "sample_rate": 32000
+              }
+            }
+          }
+        },
+        "conditioning_return": {
+          "task": "r2v",
+          "positive_metadata": [
+            "pooled_output",
+            "minimax_token_tags",
+            "minimax_refs"
+          ],
+          "reference_blocks": [
+            {
+              "kind": "image",
+              "latent_h": 24,
+              "latent_w": 40,
+              "latent": {
+                "shape": [
+                  1,
+                  24,
+                  1,
+                  24,
+                  40
+                ],
+                "numel": 23040
+              }
+            },
+            {
+              "kind": "video_audio",
+              "latent_t": 12,
+              "latent_h": 24,
+              "latent_w": 40,
+              "ref_audio_t": 80,
+              "latent": {
+                "shape": [
+                  1,
+                  24,
+                  12,
+                  24,
+                  40
+                ],
+                "numel": 276480
+              },
+              "audio_latent": {
+                "shape": [
+                  1,
+                  32,
+                  2,
+                  80
+                ],
+                "numel": 5120
+              }
+            },
+            {
+              "kind": "audio",
+              "ref_audio_t": 80,
+              "audio_latent": {
+                "shape": [
+                  1,
+                  32,
+                  2,
+                  80
+                ],
+                "numel": 5120
+              }
+            }
+          ],
+          "hint": "r2v — Reference-to AV — subject images (+ optional tags) in prompt (MiniMax H3) (~1 ref image(s), 1 ref video(s))"
+        },
+        "sampling_start": {
+          "seed": 42,
+          "steps": 20,
+          "positive_present": true
+        }
+      }
+    },
+    {
+      "caseId": "fixed-director-r2v-video-noaudio",
+      "mode": "h3_r2v",
+      "engine": "director",
+      "passed": true,
+      "promptId": "10432053-b782-4e60-8186-8c6172d2a575",
+      "wallSecondsIncludingValidation": 93.392,
+      "settings": {
+        "seed": 42,
+        "width": 640,
+        "height": 360,
+        "frames": 124,
+        "fps": 24,
+        "steps": 20,
+        "durationSeconds": 5,
+        "sound": true,
+        "referenceVideoAudio": false,
+        "refImageSize": "match"
+      },
+      "assetKeys": [
+        "ref_video_0"
+      ],
+      "outputNodeIds": [
+        "8"
+      ],
+      "raw": {
+        "width": 640,
+        "height": 384,
+        "fps": 24.0,
+        "duration": 5.17,
+        "codec": "h264",
+        "audio_codec": "aac"
+      },
+      "final": {
+        "width": 640,
+        "height": 360,
+        "fps": 24.0,
+        "duration": 5.17,
+        "codec": "h264",
+        "audio_codec": "aac"
+      },
+      "muted": {
+        "width": 640,
+        "height": 360,
+        "fps": 24.0,
+        "duration": 5.17,
+        "codec": "h264",
+        "audio_codec": null
+      },
+      "frameCountVerified": 124,
+      "bytes": 150285,
+      "sha256": "ad665520d75a0b675c8f33cdf7257771fc85efea77e7db9e2c9952b206a8fc7b",
+      "posterDimensions": [
+        640,
+        360
+      ],
+      "audioMeanDb": -21.2,
+      "audioPeakDb": -1.9,
+      "checks": {
+        "completeAudioVideoDecode": true,
+        "frameCount": true,
+        "h264Aac": true,
+        "alignedCanvasAndExactCrop": true,
+        "faststart": true,
+        "soundOffExport": true,
+        "posterJpegDecode": true,
+        "existingComfyClientDownload": true
+      },
+      "conditioningObservation": {
+        "conditioning_input": {
+          "task": "r2v",
+          "length": 124,
+          "audio_prompt_tags": [],
+          "inputs": {
+            "first_frame": null,
+            "last_frame": null,
+            "ref_images": null,
+            "ref_videos": {
+              "ref_video_0": {
+                "shape": [
+                  47,
+                  384,
+                  640,
+                  3
+                ],
+                "numel": 34652160
+              }
+            },
+            "ref_video_audios": null,
+            "ref_audios": null
+          }
+        },
+        "conditioning_return": {
+          "task": "r2v",
+          "positive_metadata": [
+            "pooled_output",
+            "minimax_token_tags",
+            "minimax_refs"
+          ],
+          "reference_blocks": [
+            {
+              "kind": "video",
+              "latent_t": 12,
+              "latent_h": 24,
+              "latent_w": 40,
+              "ref_audio_t": 0,
+              "latent": {
+                "shape": [
+                  1,
+                  24,
+                  12,
+                  24,
+                  40
+                ],
+                "numel": 276480
+              },
+              "audio_latent": null
+            }
+          ],
+          "hint": "r2v — Reference-to AV — subject images (+ optional tags) in prompt (MiniMax H3) (~0 ref image(s), 1 ref video(s))"
+        },
+        "sampling_start": {
+          "seed": 42,
+          "steps": 20,
+          "positive_present": true
+        }
+      }
+    }
+  ],
+  "supplementaryCases": [
+    {
+      "caseId": "native-t2v",
+      "mode": "h3_t2v",
+      "engine": "native",
+      "passed": true,
+      "promptId": "15df2a28-ec72-4808-865c-39c8c49fb8b4",
+      "wallSecondsIncludingValidation": 99.867,
+      "settings": {
+        "seed": 42,
+        "width": 640,
+        "height": 360,
+        "frames": 124,
+        "fps": 24,
+        "steps": 20,
+        "durationSeconds": 5,
+        "sound": true,
+        "referenceVideoAudio": true,
+        "refImageSize": "match"
+      },
+      "assetKeys": [],
+      "outputNodeIds": [
+        "92"
+      ],
+      "raw": {
+        "width": 640,
+        "height": 384,
+        "fps": 24.0,
+        "duration": 5.17,
+        "codec": "h264",
+        "audio_codec": "aac"
+      },
+      "final": {
+        "width": 640,
+        "height": 360,
+        "fps": 24.0,
+        "duration": 5.17,
+        "codec": "h264",
+        "audio_codec": "aac"
+      },
+      "muted": {
+        "width": 640,
+        "height": 360,
+        "fps": 24.0,
+        "duration": 5.17,
+        "codec": "h264",
+        "audio_codec": null
+      },
+      "frameCountVerified": 124,
+      "bytes": 1188784,
+      "sha256": "66cf6d847f40b1f8e5b0ac590f5975b091b1f25bf8b647bc1e2b08be9c73e775",
+      "posterDimensions": [
+        640,
+        360
+      ],
+      "audioMeanDb": -51.4,
+      "audioPeakDb": -32.2,
+      "checks": {
+        "completeAudioVideoDecode": true,
+        "frameCount": true,
+        "h264Aac": true,
+        "alignedCanvasAndExactCrop": true,
+        "faststart": true,
+        "soundOffExport": true,
+        "posterJpegDecode": true,
+        "existingComfyClientDownload": true
+      }
+    },
+    {
+      "caseId": "probe-i2v-firstonly",
+      "mode": "h3_i2v",
+      "engine": "director",
+      "passed": true,
+      "promptId": "e31d72ab-9afb-43a0-9aa4-eb5b2b33be67",
+      "wallSecondsIncludingValidation": 65.744,
+      "settings": {
+        "seed": 42,
+        "width": 640,
+        "height": 360,
+        "frames": 124,
+        "fps": 24,
+        "steps": 20,
+        "durationSeconds": 5,
+        "sound": true,
+        "referenceVideoAudio": true,
+        "refImageSize": "match"
+      },
+      "assetKeys": [
+        "first_frame"
+      ],
+      "outputNodeIds": [
+        "8"
+      ],
+      "raw": {
+        "width": 640,
+        "height": 384,
+        "fps": 24.0,
+        "duration": 5.17,
+        "codec": "h264",
+        "audio_codec": "aac"
+      },
+      "final": {
+        "width": 640,
+        "height": 360,
+        "fps": 24.0,
+        "duration": 5.17,
+        "codec": "h264",
+        "audio_codec": "aac"
+      },
+      "muted": {
+        "width": 640,
+        "height": 360,
+        "fps": 24.0,
+        "duration": 5.17,
+        "codec": "h264",
+        "audio_codec": null
+      },
+      "frameCountVerified": 124,
+      "bytes": 206666,
+      "sha256": "9c55085df92450af894af7cb8c0c100f836eca15dd61deb63891852238fc951b",
+      "posterDimensions": [
+        640,
+        360
+      ],
+      "audioMeanDb": -24.1,
+      "audioPeakDb": -6.1,
+      "checks": {
+        "completeAudioVideoDecode": true,
+        "frameCount": true,
+        "h264Aac": true,
+        "alignedCanvasAndExactCrop": true,
+        "faststart": true,
+        "soundOffExport": true,
+        "posterJpegDecode": true,
+        "existingComfyClientDownload": true
+      },
+      "conditioningObservation": {
+        "conditioning_input": {
+          "task": "i2v",
+          "length": 124,
+          "inputs": {
+            "first_frame": {
+              "shape": [
+                1,
+                384,
+                640,
+                3
+              ],
+              "numel": 737280
+            },
+            "last_frame": null,
+            "ref_images": null,
+            "ref_videos": null,
+            "ref_video_audios": null,
+            "ref_audios": null
+          }
+        },
+        "conditioning_return": {
+          "task": "i2v",
+          "positive_metadata": [
+            "pooled_output",
+            "minimax_token_tags",
+            "minimax_keyframes"
+          ],
+          "hint": "i2v — Image-to AV — first keyframe conditioning (MiniMax H3)"
+        },
+        "sampling_start": {
+          "seed": 42,
+          "steps": 20,
+          "positive_present": true
+        }
+      }
+    },
+    {
+      "caseId": "probe-t2v-audible",
+      "mode": "h3_t2v",
+      "engine": "director",
+      "passed": true,
+      "promptId": "8850fd0d-547a-4f65-894c-345b756739d4",
+      "wallSecondsIncludingValidation": 78.533,
+      "settings": {
+        "seed": 42,
+        "width": 640,
+        "height": 360,
+        "frames": 124,
+        "fps": 24,
+        "steps": 20,
+        "durationSeconds": 5,
+        "sound": true,
+        "referenceVideoAudio": true,
+        "refImageSize": "match"
+      },
+      "assetKeys": [],
+      "outputNodeIds": [
+        "8"
+      ],
+      "raw": {
+        "width": 640,
+        "height": 384,
+        "fps": 24.0,
+        "duration": 5.17,
+        "codec": "h264",
+        "audio_codec": "aac"
+      },
+      "final": {
+        "width": 640,
+        "height": 360,
+        "fps": 24.0,
+        "duration": 5.17,
+        "codec": "h264",
+        "audio_codec": "aac"
+      },
+      "muted": {
+        "width": 640,
+        "height": 360,
+        "fps": 24.0,
+        "duration": 5.17,
+        "codec": "h264",
+        "audio_codec": null
+      },
+      "frameCountVerified": 124,
+      "bytes": 755991,
+      "sha256": "22115a6a3494fe319023f6688da2523ec5e96e36473941244dcb07869194fbda",
+      "posterDimensions": [
+        640,
+        360
+      ],
+      "audioMeanDb": -23.7,
+      "audioPeakDb": -3.5,
+      "checks": {
+        "completeAudioVideoDecode": true,
+        "frameCount": true,
+        "h264Aac": true,
+        "alignedCanvasAndExactCrop": true,
+        "faststart": true,
+        "soundOffExport": true,
+        "posterJpegDecode": true,
+        "existingComfyClientDownload": true
+      },
+      "conditioningObservation": {
+        "conditioning_input": {
+          "task": "t2v",
+          "length": 124,
+          "inputs": {
+            "first_frame": null,
+            "last_frame": null,
+            "ref_images": null,
+            "ref_videos": null,
+            "ref_video_audios": null,
+            "ref_audios": null
+          }
+        },
+        "conditioning_return": {
+          "task": "t2v",
+          "positive_metadata": [
+            "pooled_output",
+            "minimax_token_tags"
+          ],
+          "hint": "t2v — Text-to AV (no keyframes or references) (MiniMax H3)"
+        },
+        "sampling_start": {
+          "seed": 42,
+          "steps": 20,
+          "positive_present": true
+        }
+      }
+    }
+  ],
+  "fixedSeedNativeComparison": {
+    "seed": 42,
+    "steps": 20,
+    "requestDimensions": [
+      640,
+      360
+    ],
+    "frames": 124,
+    "decodedRgbSha256": {
+      "native-t2v": "5187e17964c42ef9d03b82a7955cdaf4e442e241cdb2ced5e8bb4040a1049155",
+      "fixed-director-t2v": "5187e17964c42ef9d03b82a7955cdaf4e442e241cdb2ced5e8bb4040a1049155"
+    },
+    "decodedPixelsIdentical": true,
+    "audioPcmBitEqualityClaimed": false,
+    "speedupClaimed": false
+  },
+  "plugin": {
+    "upstreamRevision": "4c6245e518dd8a494f3afc4f3cccd53f22d82d10",
+    "initialComparison": {
+      "trackedFiles": 106,
+      "byteIdentical": 104
+    },
+    "acceptedComparison": {
+      "trackedFiles": 106,
+      "byteIdentical": 102
+    },
+    "manifest": "director_plugin_manifest.json",
+    "existingTwoPatchesPreserved": true,
+    "audioLabelRegression": "<Audio 2> survives planning/execution; image + video_audio + audio encoded in minimax_refs"
+  },
+  "failuresAndCorrections": [
+    {
+      "case": "initial native control",
+      "result": "failed",
+      "error": "hostbuf_file_reader_read failed; Windows error 1450",
+      "correction": "Verified idle queues; released idle ComfyUI model caches through /free; repeated full control successfully"
+    },
+    {
+      "case": "premature isolated fixed-image test",
+      "result": "canceled-own-test",
+      "correction": "Canceled only the newly submitted owned test, waited for other isolated GPU work to finish, then repeated successfully; excluded from pass count"
+    }
+  ],
+  "sourceChecks": {
+    "workerPytestPassed": 221,
+    "ruff": "passed",
+    "baselineWorkflowFiles": 11,
+    "baselineWorkflowFilesUnchanged": true,
+    "editableGraphs": 3,
+    "editableGraphLinkAndWidgetChecks": "passed",
+    "nativeRevisionProtocolComparedWithApplicationCommit": "b640d4a0effa0c052a80abc339585c0fb2d3f9d7"
+  },
+  "notValidated": [
+    "application registry/dispatch adapter integration",
+    "M64 browser and production Range/play/download",
+    "production service restart/survival",
+    "4s and 15s GPU profiles",
+    "576/720 tiers and portrait/square GPU profiles",
+    "12/30-step GPU quality",
+    "all 9-image/3-video/3-audio GPU combinations",
+    "manual editable-UI roundtrip",
+    "Turbo8/4, SelfLift, Semantic Bridge, FaceRefine, second-pass refinement"
+  ],
+  "timingNote": "Wall times include generation, downloads and validation, with warm caches and diagnostic hooks. No speedup conclusion."
+}

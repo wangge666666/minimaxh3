@@ -1,0 +1,437 @@
+{
+  "schemaVersion": 1,
+  "defaultEngine": "native",
+  "engines": {
+    "native": {
+      "status": "baseline",
+      "modes": {
+        "h3_t2v": {
+          "available": true,
+          "template": "h3_t2v_api.json",
+          "mapping": "h3_t2v_mapping.json",
+          "outputNodeIds": [
+            "92"
+          ],
+          "outputKind": "video",
+          "checkpointFamily": "fl2va",
+          "validation": {
+            "level": "baseline",
+            "profiles": []
+          },
+          "revision": "native-sha256:9d05548aaf437ef7198ee9a127ce024f7542aac1f503ba4f5824bf6e9bca2235",
+          "fileSha256": {
+            "h3_t2v_api.json": "13961f228274c4546adda35bc594dd1609a1aee9c01f314a59cc59ffb43e150b",
+            "h3_t2v_mapping.json": "2d7a60ef439940109803b299f0bb09335bbfe79e6238dadc5fb025a368843bde"
+          }
+        },
+        "h3_i2v": {
+          "available": true,
+          "template": "h3_i2v_api.json",
+          "mapping": "h3_i2v_mapping.json",
+          "outputNodeIds": [
+            "92"
+          ],
+          "outputKind": "video",
+          "checkpointFamily": "fl2va",
+          "validation": {
+            "level": "baseline",
+            "profiles": []
+          },
+          "revision": "native-sha256:f124bbe748ae9e01f3208f7bc4c5996fd99e4ca05ed3e132e6fb45ffd70e34cb",
+          "fileSha256": {
+            "h3_i2v_api.json": "40d46bc4db308621860fe3687b5bcafb03404affb5499c87b8ef5d3bd91bd99c",
+            "h3_i2v_mapping.json": "01271f0c9558eefbae9e53a243a80bccc422f1fdcb0d26d2d3a0187f78e07b7e"
+          }
+        },
+        "h3_r2v": {
+          "available": true,
+          "template": "h3_r2v_api.json",
+          "mapping": "h3_r2v_mapping.json",
+          "outputNodeIds": [
+            "92"
+          ],
+          "outputKind": "video",
+          "checkpointFamily": "ref2va",
+          "validation": {
+            "level": "baseline",
+            "profiles": []
+          },
+          "revision": "native-sha256:ef6dc6ee5418e1d9dc685972fe8ead52c93ce4c65903ae6ecb6ffd42e95c2b9f",
+          "fileSha256": {
+            "h3_r2v_api.json": "55a16013150a07aacc8717eb6b65ae9344b021cc62fd45ffb43b306e2baaaf6d",
+            "h3_r2v_mapping.json": "f5d3291a75ace4f9cb0eccb32f68b71682d4db0facc7dda8526090f05ac00373"
+          }
+        }
+      },
+      "revisionStrategy": "native-sha256",
+      "builderRevision": "native-v1.0.0"
+    },
+    "director": {
+      "revision": "director-v1.0.0",
+      "status": "gpu-validated",
+      "modes": {
+        "h3_t2v": {
+          "available": true,
+          "template": "h3_director_t2v_api.json",
+          "mapping": "h3_director_t2v_mapping.json",
+          "outputNodeIds": [
+            "8"
+          ],
+          "outputKind": "video",
+          "checkpointFamily": "fl2va",
+          "validation": {
+            "level": "gpu-smoke",
+            "evidence": "validation/director-v1.0.0.json",
+            "profiles": [
+              {
+                "caseId": "fixed-director-t2v",
+                "dimensions": [
+                  640,
+                  360
+                ],
+                "frames": 124,
+                "steps": 20,
+                "assetKeys": [],
+                "referenceVideoAudio": true
+              }
+            ]
+          },
+          "revision": "director-v1.0.0",
+          "fileSha256": {
+            "h3_director_t2v_api.json": "fe83e914126b48052deed25367be78284eb35baab03ebd03adb376b2f3a5714e",
+            "h3_director_t2v_mapping.json": "c10a17838b8e6268ed652c058e814edc4f24265f75afe565a86269c45643a57c"
+          }
+        },
+        "h3_i2v": {
+          "available": true,
+          "template": "h3_director_i2v_api.json",
+          "mapping": "h3_director_i2v_mapping.json",
+          "outputNodeIds": [
+            "8"
+          ],
+          "outputKind": "video",
+          "checkpointFamily": "fl2va",
+          "validation": {
+            "level": "gpu-smoke",
+            "evidence": "validation/director-v1.0.0.json",
+            "profiles": [
+              {
+                "caseId": "fixed-director-i2v",
+                "dimensions": [
+                  640,
+                  360
+                ],
+                "frames": 124,
+                "steps": 20,
+                "assetKeys": [
+                  "first_frame",
+                  "last_frame"
+                ],
+                "referenceVideoAudio": true
+              }
+            ]
+          },
+          "revision": "director-v1.0.0",
+          "fileSha256": {
+            "h3_director_i2v_api.json": "971b856a432da45e39d47c12185f5cc9c45632e1e21d8423d95f3bfcf38c2126",
+            "h3_director_i2v_mapping.json": "d5e30a8a04a41f849a32321de3776c8d82ba53328de1dc8d38ec23ac588e0f7c"
+          }
+        },
+        "h3_r2v": {
+          "available": true,
+          "template": "h3_director_r2v_api.json",
+          "mapping": "h3_director_r2v_mapping.json",
+          "outputNodeIds": [
+            "8"
+          ],
+          "outputKind": "video",
+          "checkpointFamily": "ref2va",
+          "validation": {
+            "level": "gpu-smoke",
+            "evidence": "validation/director-v1.0.0.json",
+            "profiles": [
+              {
+                "caseId": "fixed-director-r2v-image",
+                "dimensions": [
+                  640,
+                  360
+                ],
+                "frames": 124,
+                "steps": 20,
+                "assetKeys": [
+                  "ref_image_0"
+                ],
+                "referenceVideoAudio": true
+              },
+              {
+                "caseId": "fixed-director-r2v-video",
+                "dimensions": [
+                  640,
+                  360
+                ],
+                "frames": 124,
+                "steps": 20,
+                "assetKeys": [
+                  "ref_video_0"
+                ],
+                "referenceVideoAudio": true
+              },
+              {
+                "caseId": "fixed-director-r2v-audio",
+                "dimensions": [
+                  640,
+                  360
+                ],
+                "frames": 124,
+                "steps": 20,
+                "assetKeys": [
+                  "ref_audio_0"
+                ],
+                "referenceVideoAudio": true
+              },
+              {
+                "caseId": "fixed-director-r2v-combined",
+                "dimensions": [
+                  640,
+                  360
+                ],
+                "frames": 124,
+                "steps": 20,
+                "assetKeys": [
+                  "ref_image_0",
+                  "ref_video_0",
+                  "ref_audio_0"
+                ],
+                "referenceVideoAudio": true
+              },
+              {
+                "caseId": "fixed-director-r2v-video-noaudio",
+                "dimensions": [
+                  640,
+                  360
+                ],
+                "frames": 124,
+                "steps": 20,
+                "assetKeys": [
+                  "ref_video_0"
+                ],
+                "referenceVideoAudio": false
+              }
+            ]
+          },
+          "revision": "director-v1.0.0",
+          "fileSha256": {
+            "h3_director_r2v_api.json": "d92fe09c738b32fb632329e0fe721452122e3c0d119f62049c8f28688fb6dde9",
+            "h3_director_r2v_mapping.json": "cde4cbe1e517e2c04139785b45a327245081bd1151498c7b6bebfda5b80b201e"
+          }
+        }
+      },
+      "runtime": {
+        "comfyui": "0.34.0",
+        "upstream": "https://github.com/AIMixer/ComfyUI_MiniMaxH3_Director",
+        "upstreamRevision": "4c6245e518dd8a494f3afc4f3cccd53f22d82d10",
+        "pluginFolder": "ComfyUI_MiniMaxH3_Director",
+        "requiredCustomNodes": [
+          "MiniMaxH3Director",
+          "MiniMaxH3DirectorGroupImageToVideo",
+          "MiniMaxH3DirectorGroupReferenceToVideo"
+        ],
+        "localPatches": [
+          "director/audio_export.py: frame-aligned silence",
+          "nodes/director_common.py: inherit global prompt",
+          "director/external_groups.py: keep native combined audio labels",
+          "director/executor_core.py: keep native combined audio labels"
+        ],
+        "productionActivation": "requires plugin whitelist and application integration; no automatic rollout",
+        "manifest": "director_plugin_manifest.json",
+        "requiredBuiltinNodes": [
+          "UNETLoader",
+          "CLIPLoader",
+          "VAELoader",
+          "LoadImage",
+          "LoadVideo",
+          "GetVideoComponents",
+          "LoadAudio",
+          "CreateVideo",
+          "SaveVideo"
+        ]
+      },
+      "activation": {
+        "defaultEnabled": false,
+        "requiresNodeProbe": true,
+        "requiresApplicationAdapter": true
+      },
+      "builderFilesSha256": {
+        "mapping.py": "db6b16b0956861efc91cf458908da2b7c46b87d6a91da0aaa552016acbae95c8",
+        "director_workflow.py": "9cbd54e9cfaa0f102b9c7e0e8085fd2055ebd4d09f8097a5b6596962925f4c03",
+        "director_contract.py": "251a12354b40ab2077a722b0ab647e0735cacfcd50b6e04782e4c555ee75370b"
+      }
+    }
+  },
+  "parameters": {
+    "fps": 24,
+    "steps": [
+      12,
+      20,
+      30
+    ],
+    "defaultSteps": 20,
+    "durationSeconds": {
+      "min": 4,
+      "max": 15
+    },
+    "frames": [
+      107,
+      124,
+      141,
+      158,
+      175,
+      192,
+      209,
+      226,
+      243,
+      260,
+      277,
+      294,
+      311,
+      328,
+      345,
+      362
+    ],
+    "frameFormula": "5 + 17 * ceil((ceil(seconds * 24 - 1e-9) - 5) / 17)",
+    "dimensions": [
+      [
+        640,
+        384
+      ],
+      [
+        640,
+        360
+      ],
+      [
+        360,
+        640
+      ],
+      [
+        360,
+        360
+      ],
+      [
+        1024,
+        576
+      ],
+      [
+        576,
+        1024
+      ],
+      [
+        576,
+        576
+      ],
+      [
+        1280,
+        720
+      ],
+      [
+        720,
+        1280
+      ],
+      [
+        720,
+        720
+      ]
+    ],
+    "canvasAlignment": 32,
+    "seed": {
+      "min": 0,
+      "max": 4294967295
+    },
+    "refImageSize": [
+      "match",
+      "max"
+    ],
+    "sound": [
+      true,
+      false
+    ],
+    "referenceVideoAudio": [
+      true,
+      false
+    ],
+    "ratios": [
+      "16:9",
+      "9:16",
+      "1:1"
+    ],
+    "resolutions": [
+      360,
+      576,
+      720
+    ]
+  },
+  "assets": {
+    "h3_t2v": {
+      "image": 0,
+      "video": 0,
+      "audio": 0
+    },
+    "h3_i2v": {
+      "image": 2,
+      "video": 0,
+      "audio": 0,
+      "required": [
+        "first_frame"
+      ],
+      "optional": [
+        "last_frame"
+      ]
+    },
+    "h3_r2v": {
+      "image": 9,
+      "video": 3,
+      "audio": 3,
+      "minimumTotal": 1,
+      "keyIndexBase": 0,
+      "contiguousPerKind": true,
+      "promptTags": {
+        "image": "<Picture N>",
+        "video": "<Video N>",
+        "audio": "<Audio N>"
+      },
+      "audioLabelOrder": [
+        "enabled video soundtracks in video index order",
+        "standalone audio in audio index order"
+      ]
+    },
+    "uploadLimits": {
+      "perFileMiB": {
+        "image": 8,
+        "video": 20,
+        "audio": 10
+      },
+      "totalMiB": 96,
+      "videoDurationSeconds": [
+        2,
+        15
+      ],
+      "audioDurationSeconds": [
+        0.1,
+        15
+      ],
+      "imageMaxPixels": 16000000,
+      "normalizedMediaMaxMiB": 20,
+      "videoReferenceFps": 24,
+      "videoMaxDuration": "min(source seconds, output frames / 24)"
+    }
+  },
+  "defaults": {
+    "steps": 20,
+    "durationSeconds": 5,
+    "frames": 124,
+    "fps": 24,
+    "sound": true,
+    "referenceVideoAudio": true,
+    "refImageSize": "match"
+  },
+  "$schema": "h3_capabilities.schema.json"
+}

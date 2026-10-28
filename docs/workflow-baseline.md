@@ -32,6 +32,12 @@ affects generation if connected to the executed sampler.
 Preserve durable prompt recovery, exact output validation, full media decoding,
 posters, HTTP Range and downloads when changing generation or exports.
 
+The additive Director package is documented in
+[the workflow handoff](../WORKFLOWS-DIRECTOR-HANDOFF.md), with the real versioned
+registry at `workflows/h3_capabilities.json`. Native remains the default. The
+Director package's GPU acceptance is distinct from application integration and
+production activation; do not enable it from file presence alone.
+
 References: [official guide](https://docs.comfy.org/tutorials/video/minimax/minimax-h3),
 [templates](https://github.com/Comfy-Org/workflow_templates),
 [models](https://huggingface.co/Comfy-Org/MiniMax-H3).

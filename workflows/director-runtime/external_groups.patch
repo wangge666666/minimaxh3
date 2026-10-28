@@ -1,0 +1,13 @@
+--- a/director/external_groups.py
++++ b/director/external_groups.py
+@@ -798,6 +798,10 @@
+                 for idx, aud in sorted((g.get("ref_video_audios") or {}).items())
+             ]
+             audio_idxs = usable_ref_audio_indices(ref_audios)
++            # Native H3 labels paired video soundtracks before standalone audio.
++            paired = set(usable_ref_audio_indices(ref_video_audios))
++            video_slots = {int(v.index) for v in ref_videos}
++            audio_idxs = list(range(len(audio_idxs) + len(paired & video_slots)))
+             prompt = drop_unusable_audio_prompt_tags(prompt, audio_idxs)
+             prompt = reinforce_r2v_prompt(
+                 prompt,

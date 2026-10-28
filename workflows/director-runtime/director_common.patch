@@ -1,0 +1,11 @@
+--- a/nodes/director_common.py
++++ b/nodes/director_common.py
+@@ -208,7 +208,7 @@
+                     "id": "s0",
+                     "start": 0,
+                     "length": total_frames,
+-                    "prompt": "",
++                    "prompt": global_prompt,
+                     "taskType": "",
+                     "refs": [],
+                     "referenceVideo": {},
