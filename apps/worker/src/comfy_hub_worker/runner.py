@@ -13,6 +13,7 @@ from comfy_hub_worker.config import Settings
 from comfy_hub_worker.mapping import load_workflow
 from comfy_hub_worker.references import normalize_reference
 from comfy_hub_worker.video import finalize_video, make_poster
+from comfy_hub_worker.workflow_dispatch import prepare_submission, recovery_outputs
 
 log = logging.getLogger("comfy_hub_worker")
 
@@ -148,8 +149,6 @@ async def export_with_lease(data: bytes, job: dict, cloud: Cloud):
 
 
 async def execute(job: dict, journal: Journal, cloud: Cloud, comfy: Comfy, settings: Settings):
-    values = workflow_values(job)
-    workflow, outputs = load_workflow(settings.workflow_directory, job["mode"], values)
     prompt_id = job.get("prompt_id")
     if job.get("submission_pending") and not prompt_id:
         prompt_id = await comfy.find_submission(job["id"])
@@ -157,6 +156,15 @@ async def execute(job: dict, journal: Journal, cloud: Cloud, comfy: Comfy, setti
             raise RuntimeError(
                 "上次提交结果不确定，未在队列与最近历史中找到。请人工核对，禁止直接重试"
             )
+    workflow = None
+    if prompt_id:
+        outputs = recovery_outputs(job, settings.workflow_directory)
+        job.update(prompt_id=prompt_id, workflowOutputNodeIds=outputs)
+        journal.save(job)
+    else:
+        prepare_submission(job, settings.workflow_directory)
+        values = workflow_values(job)
+        workflow, outputs = load_workflow(settings.workflow_directory, job["mode"], values)
     state = await cloud.progress(job, "running", "正在准备工作流", prompt_id)
     if state["status"] != "running":
         raise RuntimeError("云端任务状态已变化")
@@ -198,6 +206,11 @@ async def execute(job: dict, journal: Journal, cloud: Cloud, comfy: Comfy, setti
             )
             values["image"] = await comfy.upload(job["id"], reference)
             workflow, outputs = load_workflow(settings.workflow_directory, job["mode"], values)
+        # Media normalization may take time. Refuse a template/configuration
+        # replacement between the initial check and the actual submission.
+        prepare_submission(job, settings.workflow_directory)
+        if outputs != job["workflowOutputNodeIds"]:
+            raise ValueError("工作流输出与持久化版本不匹配，禁止提交")
         job["submission_pending"] = True
         journal.save(job)  # 在 /prompt 之前持久化意图。
         try:
@@ -282,14 +295,16 @@ async def run(settings: Settings, once=False):
                 "frames": 124,
                 "fps": 24,
             }
-            for mode in (("text", "img2img") if settings.image_generation_enabled else ()):
-                load_workflow(settings.workflow_directory, mode, values)
-            if settings.h3_comfyui_base_url:
-                for mode in ("h3_i2v", "h3_r2v", "h3_t2v"):
-                    load_workflow(
-                        settings.workflow_directory, mode, {**values, "width": 640, "height": 384}
-                    )
-            log.info("Worker 启动，固定工作流映射已校验")
+            if journal.read() is None:
+                for mode in (("text", "img2img") if settings.image_generation_enabled else ()):
+                    load_workflow(settings.workflow_directory, mode, values)
+                if settings.h3_comfyui_base_url:
+                    for mode in ("h3_i2v", "h3_r2v", "h3_t2v"):
+                        load_workflow(
+                            settings.workflow_directory, mode,
+                            {**values, "width": 640, "height": 384},
+                        )
+            log.info("Worker 启动；优先恢复持久任务，新提交前校验固定工作流")
             while True:
                 job = None
                 try:
@@ -369,12 +384,19 @@ async def resume_or_execute(job, journal, cloud, comfy, settings):
     response = await cloud.http.get("/api/mvp/state")
     response.raise_for_status()
     current = next((j for j in response.json()["jobs"] if j["id"] == job["id"]), None)
+    if current:
+        for key in ("mode", "workflowEngine", "workflowRevision", "prompt_id"):
+            if current.get(key) is not None and job.get(key) is not None:
+                if current[key] != job[key]:
+                    raise ValueError("恢复信息与云端任务不一致，请人工核对；禁止重新提交")
+            if current.get(key) is not None:
+                job[key] = current[key]
+        if not job.get("workflowOutputNodeIds") and current.get("workflowOutputNodeIds"):
+            job["workflowOutputNodeIds"] = current["workflowOutputNodeIds"]
     if current and current["status"] == "uploading":
-        outputs = load_workflow(
-            settings.workflow_directory,
-            job["mode"],
-            workflow_values(job),
-        )[1]
+        if not job.get("prompt_id"):
+            raise ValueError("上传恢复缺少原 prompt ID，禁止重新提交")
+        outputs = recovery_outputs(job, settings.workflow_directory)
 
         async def tick(message):
             await cloud.progress(job, "uploading", message, job["prompt_id"])

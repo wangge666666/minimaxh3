@@ -1,14 +1,16 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import type { WorkflowEngine } from "@hub/shared";
+import { nativeDefaults, nativeLimits, workflowOption, type WorkflowOption } from "@/lib/mvp/workflow-options";
 import { Button } from "@/components/ui/button";
 import { ReferencePicker } from "@/components/reference-picker";
 import { VideoPlayer } from "@/components/video-player";
 import { api, submitWithRecovery, type UploadProgress } from "@/lib/mvp/client";
 import { isVideoMode, needsReference, type Job, type Mode } from "@/lib/mvp/schema";
 import { maxActiveJobs, recentHistoryLimit } from "@/lib/mvp/queue";
-import { ratios, resolutions, videoSize, nativeSize, duration, framesForDuration, inputDurationForFrames, minDurationSeconds, maxDurationSeconds, stepOptions, totalAssetBytes, type Ratio, type AssetKind } from "@/lib/mvp/h3";
+import { ratios, resolutions, videoSize, nativeSize, duration, framesForDuration, inputDurationForFrames, totalAssetBytes, type Ratio, type AssetKind } from "@/lib/mvp/h3";
 
-type State = { jobs: Job[]; worker: { online: boolean; h3_online: boolean; local_online: boolean } | null; features?: {imageGeneration:boolean}; queue?: {active:number;limit:number} };
+type State = { jobs: Job[]; worker: { online: boolean; h3_online: boolean; local_online: boolean } | null; features?: {imageGeneration:boolean}; queue?: {active:number;limit:number}; workflows?: WorkflowOption[] };
 const labels: Record<string, string> = { queued: "排队中", claimed: "已领取", running: "生成中", uploading: "验证与保存", completed: "已完成", failed: "失败 · 需检查", canceled: "已取消" };
 const names: Record<Mode, string> = { text: "文生图", img2img: "图片重绘", h3_t2v: "文生视频", h3_i2v: "首尾帧", h3_r2v: "多素材参考" };
 const field = "w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary";
@@ -16,6 +18,10 @@ const field = "w-full rounded-xl border border-border bg-background px-3 py-2.5 
 export default function Studio() {
   const [data, setData] = useState<State>({ jobs: [], worker: null });
   const [mode, setMode] = useState<Mode>("h3_i2v");
+  const [workflowEngine, setWorkflowEngine] = useState<WorkflowEngine>("native");
+  const option = workflowOption(data.workflows, mode, workflowEngine);
+  const limits = option?.limits ?? nativeLimits;
+  const workflowReady = !isVideoMode(mode) || (option?.ready ?? workflowEngine === "native");
   const [prompt, setPrompt] = useState("");
   const [size, setSize] = useState("256x256");
   const [denoise, setDenoise] = useState(0.6);
@@ -23,11 +29,11 @@ export default function Studio() {
   const [files, setFiles] = useState<Record<string,File[]>>({});
   const [ratio,setRatio]=useState<Ratio>("16:9");
   const [resolution,setResolution]=useState(360);
-  const [durationSeconds,setDurationSeconds]=useState("5");
+  const [durationSeconds,setDurationSeconds]=useState(String(nativeDefaults.durationSeconds));
   const durationValue=Number(durationSeconds);
-  const validDuration=durationSeconds.trim()!=="" && Number.isFinite(durationValue) && durationValue>=minDurationSeconds && durationValue<=maxDurationSeconds;
+  const validDuration=durationSeconds.trim()!=="" && Number.isFinite(durationValue) && durationValue>=limits.minDurationSeconds && durationValue<=limits.maxDurationSeconds;
   const frames=validDuration?framesForDuration(durationValue):124;
-  const [steps,setSteps]=useState(20);
+  const [steps,setSteps]=useState(nativeDefaults.steps);
   const [sound,setSound]=useState(true);
   const [referenceVideoAudio,setReferenceVideoAudio]=useState(true);
   const [refImageSize,setRefImageSize]=useState<"match"|"max">("match");
@@ -73,6 +79,7 @@ export default function Studio() {
   }
   async function submit(event: React.FormEvent) {
     event.preventDefault(); setError("");
+    if(!workflowReady) {setError(option?.reason ?? "导演台尚未就绪，请选择原生生成方式");return;}
     if(video && !validDuration) {setError("请输入 4–15 秒之间的时长，可包含小数");return;}
     const attachments=groups().flatMap(([key])=>(files[key]??[]).map((file,index)=>({key:key.startsWith("ref_")?`${key}_${index}`:key,file})));
     if(reference && (mode==="h3_r2v" ? !attachments.length : !(files[mode==="h3_i2v"?"first_frame":"reference"]?.length))) {setError(mode==="h3_r2v"?"请至少上传一项图片、视频或音频参考":"请先选择参考图片或首帧");return;}
@@ -84,7 +91,7 @@ export default function Studio() {
       const retry=requestId.current!==null;
       requestId.current ??= crypto.randomUUID();
       const form = new FormData();
-      form.set("params", JSON.stringify({ requestId: requestId.current, mode, prompt, width, height, seed: actualSeed, denoise, ...(video ? { durationSeconds:durationValue,frames, fps: 24,steps,sound,referenceVideoAudio,refImageSize } : {}) }));
+      form.set("params", JSON.stringify({ requestId: requestId.current, mode, prompt, width, height, seed: actualSeed, denoise, ...(video ? { workflowEngine,durationSeconds:durationValue,frames, fps: 24,steps,sound,referenceVideoAudio,refImageSize } : {}) }));
       for(const attachment of attachments) form.set(attachment.key,attachment.file);
       const created = await submitWithRecovery(form,setUploadProgress,retry);
       requestId.current = null; pendingSeed.current = null; setSelected(created.id);
@@ -100,7 +107,7 @@ export default function Studio() {
   }
   function reuse(item: Job) {
     if(!isVideoMode(item.mode) && !imageGenerationEnabled) return;
-    setPrompt(item.prompt); setMode(item.mode); setSeed(String(item.seed)); setDenoise(item.denoise);
+    setPrompt(item.prompt); setMode(item.mode); setWorkflowEngine(item.workflowEngine??"native"); setSeed(String(item.seed)); setDenoise(item.denoise);
     if (!isVideoMode(item.mode)) setSize(`${item.width}x${item.height}`);
     else {setRatio(item.width===item.height?"1:1":item.width>item.height?"16:9":"9:16");setResolution(resolutions.includes(Math.min(item.width,item.height) as 360)?Math.min(item.width,item.height):360);setDurationSeconds(String(item.durationSeconds??inputDurationForFrames(item.frames??124)));setSteps(item.steps??20);setSound(item.sound??true);setReferenceVideoAudio(item.referenceVideoAudio??true);setRefImageSize(item.refImageSize??"match");}
     setFiles({});
@@ -132,11 +139,15 @@ export default function Studio() {
             {(video ? (["h3_i2v", "h3_r2v", "h3_t2v"] as Mode[]) : (["text", "img2img"] as Mode[])).map(value => <button type="button" key={value} disabled={busy} aria-pressed={mode === value} onClick={() => selectMode(value)} className={`rounded-lg border px-2 py-2 text-xs ${mode === value ? "border-primary bg-primary/10 text-primary" : "border-border"}`}>{names[value]}</button>)}
           </div>
           {video && <p className="text-xs leading-relaxed opacity-60">{mode === "h3_i2v" ? "上传首帧，可再添加尾帧，描述画面如何运动和过渡。" : mode === "h3_r2v" ? "组合图片、视频与音频参考，描述要保留的外观、动作或声音。" : "描述画面、动作、镜头与声音，无需上传图片。"}</p>}
+          {video && <fieldset className="space-y-2"><legend className="mb-2 text-sm font-medium">生成方式</legend>
+            <div className="grid grid-cols-2 gap-2">{(["native","director"] as const).map(engine => <button key={engine} type="button" disabled={busy} aria-pressed={workflowEngine===engine} aria-describedby="workflow-status" onClick={()=>{setWorkflowEngine(engine);setError("");changed();}} className={`rounded-lg border px-3 py-2 text-sm ${workflowEngine===engine?"border-primary bg-primary/10 text-primary":"border-border"}`}>{engine==="native"?"原生（默认）":`导演台${workflowOption(data.workflows,mode,engine)?.ready?"":" · 未就绪"}`}</button>)}</div>
+            <p id="workflow-status" role="status" className={`text-xs leading-relaxed ${workflowReady?"opacity-60":"text-amber-600 dark:text-amber-400"}`}>{workflowReady ? (workflowEngine==="native"?"使用原生流程，默认 20 步。切换生成方式会保留当前参数和素材。":"导演台已就绪。") : (option?.reason??"导演台尚未就绪，正在等待工作流交付与验收")}</p>
+          </fieldset>}
           {video && <div className="space-y-4 border-y border-border py-4">
-            <fieldset><legend className="mb-2 text-sm font-medium">画面比例</legend><div className="grid grid-cols-3 gap-2">{ratios.map(value=><button key={value} disabled={busy} type="button" aria-pressed={ratio===value} onClick={()=>{setRatio(value);changed();}} className={`flex items-center justify-center gap-2 rounded-lg border px-2 py-3 text-xs ${ratio===value?"border-primary bg-primary/10 text-primary":"border-border"}`}><span className={`inline-block border border-current ${value==="1:1"?"h-4 w-4":value==="16:9"?"h-3 w-5":"h-5 w-3"}`}/>{value}</button>)}</div></fieldset>
+            <fieldset><legend className="mb-2 text-sm font-medium">画面比例</legend><div className="grid grid-cols-3 gap-2">{ratios.filter(value=>limits.ratios.includes(value)).map(value=><button key={value} disabled={busy} type="button" aria-pressed={ratio===value} onClick={()=>{setRatio(value);changed();}} className={`flex items-center justify-center gap-2 rounded-lg border px-2 py-3 text-xs ${ratio===value?"border-primary bg-primary/10 text-primary":"border-border"}`}><span className={`inline-block border border-current ${value==="1:1"?"h-4 w-4":value==="16:9"?"h-3 w-5":"h-5 w-3"}`}/>{value}</button>)}</div></fieldset>
             <div className="grid grid-cols-2 gap-3">
-              <div><label htmlFor="resolution" className="text-sm">分辨率</label><select id="resolution" disabled={busy} value={resolution} className={`${field} mt-2`} onChange={e=>{setResolution(Number(e.target.value));changed();}}>{resolutions.map(value=>{const [w,h]=videoSize(ratio,value);return <option key={value} value={value}>{value===360?"预览":value===576?"标清":"高清"} · {w} × {h}</option>;})}</select></div>
-              <div><label htmlFor="duration" className="text-sm">视频时长（秒）</label><input id="duration" type="number" required min={minDurationSeconds} max={maxDurationSeconds} step="any" aria-describedby="duration-help" disabled={busy} value={durationSeconds} placeholder="4–15，可输入小数" className={`${field} mt-2`} onChange={e=>{setDurationSeconds(e.target.value);changed();}}/></div>
+              <div><label htmlFor="resolution" className="text-sm">分辨率</label><select id="resolution" disabled={busy} value={resolution} className={`${field} mt-2`} onChange={e=>{setResolution(Number(e.target.value));changed();}}>{resolutions.filter(value=>limits.resolutions.includes(value)).map(value=>{const [w,h]=videoSize(ratio,value);return <option key={value} value={value}>{value===360?"预览":value===576?"标清":"高清"} · {w} × {h}</option>;})}</select></div>
+              <div><label htmlFor="duration" className="text-sm">视频时长（秒）</label><input id="duration" type="number" required min={limits.minDurationSeconds} max={limits.maxDurationSeconds} step="any" aria-describedby="duration-help" disabled={busy} value={durationSeconds} placeholder="4–15，可输入小数" className={`${field} mt-2`} onChange={e=>{setDurationSeconds(e.target.value);changed();}}/></div>
             </div>
             <p id="duration-help" className="text-xs leading-relaxed opacity-60" aria-live="polite">{validDuration?`实际生成约 ${duration(frames)} 秒（${frames} 帧）。模型按 24 fps、17k+5 帧向上取整。`:"请输入 4–15 秒，可包含小数，例如 6 或 7.5。"}</p>
             {validDuration && frames<124 && <p className="text-xs leading-relaxed text-amber-600 dark:text-amber-400">此时长低于官方约 5–15 秒的训练范围，生成效果需要实测。</p>}
@@ -156,7 +167,7 @@ export default function Studio() {
           </div>
           {mode === "img2img" && <div><label htmlFor="denoise" className="flex justify-between text-sm"><span>重绘幅度</span><span className="text-primary">{denoise.toFixed(2)}</span></label><input id="denoise" className="mt-3 w-full accent-primary" type="range" min="0.1" max="1" step="0.05" value={denoise} disabled={busy} onChange={e => { setDenoise(Number(e.target.value)); changed(); }} /><div className="flex justify-between text-xs opacity-50"><span>保留原图</span><span>更多变化</span></div></div>}
           {video && <details className="rounded-xl border border-border p-3"><summary className="cursor-pointer text-sm font-medium">更多生成设置</summary><div className="mt-4 space-y-4">
-            <div className="grid grid-cols-2 gap-3"><div><label htmlFor="steps" className="text-sm">采样步数</label><select id="steps" disabled={busy} value={steps} className={`${field} mt-2`} onChange={e=>{setSteps(Number(e.target.value));changed();}}>{stepOptions.map(value=><option key={value} value={value}>{value} 步{value===20?"（默认）":""}</option>)}</select></div><div><label htmlFor="fps" className="text-sm">帧率</label><select id="fps" disabled className={`${field} mt-2`}><option>24 fps（模型原生）</option></select></div></div>
+            <div className="grid grid-cols-2 gap-3"><div><label htmlFor="steps" className="text-sm">采样步数</label><select id="steps" disabled={busy} value={steps} className={`${field} mt-2`} onChange={e=>{setSteps(Number(e.target.value));changed();}}>{limits.steps.map(value=><option key={value} value={value}>{value} 步{value===20?"（默认）":""}</option>)}</select></div><div><label htmlFor="fps" className="text-sm">帧率</label><select id="fps" disabled className={`${field} mt-2`}><option>24 fps（模型原生）</option></select></div></div>
             <label className="flex items-center gap-2 text-sm"><input disabled={busy} type="checkbox" checked={sound} onChange={e=>{setSound(e.target.checked);changed();}} className="accent-primary"/>保留成品声音</label><p className="text-xs opacity-50">关闭后导出静音 MP4，模型仍联合生成画面与声音。</p>
             {mode==="h3_r2v" && <div><label htmlFor="reference-detail" className="text-sm">参考图细节</label><select id="reference-detail" disabled={busy} value={refImageSize} onChange={e=>{setRefImageSize(e.target.value as "match"|"max");changed();}} className={`${field} mt-2`}><option value="match">匹配生成尺寸（默认）</option><option value="max">更多原图细节（更耗显存）</option></select></div>}
             <p className="text-xs leading-relaxed opacity-50">成品 {outputWidth} × {outputHeight}；生成画布 {canvasWidth} × {canvasHeight}，完成后居中裁剪边缘以保持所选比例。</p>
@@ -167,7 +178,7 @@ export default function Studio() {
             {uploadProgress.phase==="uploading" && uploadProgress.total>0 && <progress className="h-2 w-full accent-primary" aria-label="参考素材上传进度" max={uploadProgress.total} value={uploadProgress.loaded}/>}
             <p className="opacity-60">上传期间请保持此页面打开。任务进入队列后可关闭页面。</p>
           </div>}
-          <Button className="w-full py-3" disabled={busy || active >= queueLimit}>{busy ? "正在上传并提交…" : video ? "开始生成视频 →" : "开始生成图片 →"}</Button>
+          <Button className="w-full py-3" disabled={busy || !workflowReady || active >= queueLimit}>{busy ? "正在上传并提交…" : !workflowReady ? "所选生成方式尚未就绪" : video ? "开始生成视频 →" : "开始生成图片 →"}</Button>
           <p className="text-xs leading-relaxed opacity-45">{video ? "视频按顺序生成；如果 Windows 离线，任务会保留在队列中。" : "Mac 首次加载模型可能较慢，建议先用小尺寸测试。"}</p>
         </form>
         <div className="min-w-0 space-y-6">
@@ -176,10 +187,10 @@ export default function Studio() {
             <div className="flex min-h-80 items-center justify-center rounded-xl bg-background p-4">
               {job?.status === "completed" ? (isVideoMode(job.mode) ? <VideoPlayer key={job.id} id={job.id} prompt={job.prompt} width={job.width} height={job.height} hasPoster={job.has_poster}/> : <img src={`/api/mvp/jobs/${job.id}/media`} alt={job.prompt} className="max-h-[520px] max-w-full rounded-lg object-contain" />) : <div className="max-w-md text-center"><span className="text-5xl text-primary/50">◈</span><p className="mt-5 font-medium">{job ? labels[job.status] : "你的第一段创作，从这里开始"}</p><p className="mt-3 text-sm leading-relaxed opacity-60">{job?.message || (job?.status === "queued" ? `待领取队列第 ${job.queue_position} 位` : "选择模式，写下描述，开始创作。")}</p></div>}
             </div>
-            {job && <div className="mt-4 flex flex-wrap items-center justify-between gap-3"><p className="max-w-md text-xs opacity-60">{names[job.mode]} · {job.width} × {job.height}{isVideoMode(job.mode) ? ` · ${job.status==="completed"?"实际":"预计"} ${duration(job.frames)} 秒 · ${job.sound===false?"静音":"带声音"}` : ""}<br />{job.durationSeconds!==undefined && <span>请求 {job.durationSeconds} 秒 · </span>}<span className="mt-1 inline-block opacity-70">种子 {job.seed}</span></p>{job.status === "completed" && <Button asChild><a href={`/api/mvp/jobs/${job.id}/media`} download={`${job.id}.${isVideoMode(job.mode)?"mp4":"png"}`}>{isVideoMode(job.mode) ? "下载 MP4 ↓" : "下载 PNG ↓"}</a></Button>}</div>}
+            {job && <div className="mt-4 flex flex-wrap items-center justify-between gap-3"><p className="max-w-md text-xs opacity-60">{names[job.mode]}{isVideoMode(job.mode)?` · ${job.workflowEngine==="director"?"导演台":"原生"}`:""} · {job.width} × {job.height}{isVideoMode(job.mode) ? ` · ${job.status==="completed"?"实际":"预计"} ${duration(job.frames)} 秒 · ${job.sound===false?"静音":"带声音"}` : ""}<br />{job.durationSeconds!==undefined && <span>请求 {job.durationSeconds} 秒 · </span>}<span className="mt-1 inline-block opacity-70">种子 {job.seed}</span></p>{job.status === "completed" && <Button asChild><a href={`/api/mvp/jobs/${job.id}/media`} download={`${job.id}.${isVideoMode(job.mode)?"mp4":"png"}`}>{isVideoMode(job.mode) ? "下载 MP4 ↓" : "下载 PNG ↓"}</a></Button>}</div>}
           </section>
           <section className="rounded-2xl border border-border bg-card p-6"><div className="mb-4 flex justify-between"><h2 className="font-semibold">任务记录</h2><span className="text-xs opacity-50">全部未完成 · 最近 {recentHistoryLimit} 条历史</span></div>
-            {!data.jobs.length ? <p className="py-8 text-center text-sm opacity-50">还没有任务，提交后会显示真实进度。</p> : <ul className="divide-y divide-border">{data.jobs.map(item => <li key={item.id} className={`flex items-center gap-3 py-4 ${job?.id === item.id ? "text-primary" : ""}`}><button type="button" onClick={() => setSelected(item.id)} className="min-w-0 flex-1 text-left"><p className="truncate text-sm font-medium">{item.prompt}</p><p className="mt-1 text-xs opacity-60">{names[item.mode]} · {labels[item.status]}{item.queue_position ? ` · 第 ${item.queue_position} 位` : ""} · {new Date(item.created_at).toLocaleString("zh-CN")}</p>{item.status === "failed" && <p className="mt-2 text-xs text-red-500">{item.message}</p>}</button>{(isVideoMode(item.mode)||imageGenerationEnabled) && <button type="button" disabled={busy} className="shrink-0 text-xs underline opacity-70 disabled:opacity-30" onClick={() => reuse(item)}>再次使用</button>}{item.status === "queued" && <button type="button" className="shrink-0 text-xs opacity-60" onClick={() => void cancel(item.id)}>取消</button>}</li>)}</ul>}
+            {!data.jobs.length ? <p className="py-8 text-center text-sm opacity-50">还没有任务，提交后会显示真实进度。</p> : <ul className="divide-y divide-border">{data.jobs.map(item => <li key={item.id} className={`flex items-center gap-3 py-4 ${job?.id === item.id ? "text-primary" : ""}`}><button type="button" onClick={() => setSelected(item.id)} className="min-w-0 flex-1 text-left"><p className="truncate text-sm font-medium">{item.prompt}</p><p className="mt-1 text-xs opacity-60">{names[item.mode]}{isVideoMode(item.mode)?` · ${item.workflowEngine==="director"?"导演台":"原生"}`:""} · {labels[item.status]}{item.queue_position ? ` · 第 ${item.queue_position} 位` : ""} · {new Date(item.created_at).toLocaleString("zh-CN")}</p>{item.status === "failed" && <p className="mt-2 text-xs text-red-500">{item.message}</p>}</button>{(isVideoMode(item.mode)||imageGenerationEnabled) && <button type="button" disabled={busy} className="shrink-0 text-xs underline opacity-70 disabled:opacity-30" onClick={() => reuse(item)}>再次使用</button>}{item.status === "queued" && <button type="button" className="shrink-0 text-xs opacity-60" onClick={() => void cancel(item.id)}>取消</button>}</li>)}</ul>}
           </section>
         </div>
       </div>

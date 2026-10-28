@@ -10,6 +10,79 @@ import respx
 from comfy_hub_worker.runner import Cloud, Journal, execute
 
 
+async def test_image_video_audio_and_fixed_metadata_reach_loader_without_loss(
+    respx_mock, synthetic_mp4, tmp_path, monkeypatch
+):
+    import io
+
+    from PIL import Image
+
+    from comfy_hub_worker import runner
+
+    image = io.BytesIO()
+    Image.new("RGB", (96, 64), "navy").save(image, format="PNG")
+    assets = [
+        {"key": "ref_image_0", "kind": "image", "name": "test.png", "mime": "image/png"},
+        {"key": "ref_video_0", "kind": "video", "name": "test.mp4", "mime": "video/mp4"},
+        {"key": "ref_audio_0", "kind": "audio", "name": "test.m4a", "mime": "audio/mp4"},
+    ]
+    job = {
+        "id": "media-forwarding", "lease": "test-lease", "mode": "h3_r2v",
+        "prompt": "a scene", "width": 640, "height": 360, "frames": 124, "fps": 24,
+        "steps": 20, "seed": 7, "denoise": 1, "sound": True,
+        "referenceVideoAudio": True, "refImageSize": "max", "assets": assets,
+    }
+    for asset in assets:
+        respx_mock.get(
+            f"http://cloud.test/api/mvp/worker/input/media-forwarding/{asset['key']}"
+        ).respond(200, content=image.getvalue() if asset["kind"] == "image" else synthetic_mp4)
+    respx_mock.post("http://cloud.test/api/mvp/worker/progress").respond(
+        200, json={"status": "running"}
+    )
+    complete = respx_mock.post("http://cloud.test/api/mvp/worker/complete").respond(
+        200, json={"status": "completed"}
+    )
+    original = runner.load_workflow
+    forwarded = []
+
+    def observe(directory, mode, values):
+        forwarded.append(values.copy())
+        return original(directory, mode, values)
+
+    monkeypatch.setattr(runner, "load_workflow", observe)
+
+    class LocalComfy:
+        async def check(self, _graph):
+            pass
+
+        async def upload_media(self, filename, _data, _mime):
+            return "hub/" + filename
+
+        async def submit(self, _graph, _job_id):
+            return "media-prompt"
+
+        async def watch_nodes(self, *_):
+            await asyncio.Event().wait()
+
+        async def result(self, *_args, **_kwargs):
+            return synthetic_mp4
+
+    async with httpx.AsyncClient(base_url="http://cloud.test") as http:
+        await execute(job, Journal(tmp_path), Cloud(http), LocalComfy(), SimpleNamespace(
+            workflow_directory=Path(__file__).resolve().parents[3] / "workflows"
+        ))
+    values = forwarded[-1]
+    assert values["workflowEngine"] == "native" and values["workflowRevision"]
+    assert values["steps"] == 20 and values["referenceVideoAudio"] is True
+    assert values["refImageSize"] == "max"
+    assert [a["key"] for a in values["assets"]] == [a["key"] for a in assets]
+    assert [a["kind"] for a in values["assets"]] == ["image", "video", "audio"]
+    assert all(a["path"].startswith("hub/media-forwarding_") for a in values["assets"])
+    assert values["assets"][1]["has_audio"] is True
+    assert values["assets"][2]["has_audio"] is True
+    assert complete.call_count == 1
+
+
 async def test_video_only_worker_never_requests_mac(tmp_path):
     from comfy_hub_worker.config import Settings
     from comfy_hub_worker.runner import run

@@ -7,6 +7,11 @@ export function requireLocal(request: Request) {
   const host=request.headers.get("host");
   if(!host) throw new StoreError("缺少请求主机",403);
   const allowed=new Set(["http://localhost:3000","http://127.0.0.1:3000"]);
+  if(process.env.MVP_LOCAL_PORT) {
+    const port=process.env.MVP_LOCAL_PORT;
+    if(!/^\d+$/.test(port) || Number(port)<1024 || Number(port)>65535) throw new StoreError("本机端口配置不正确",503);
+    allowed.add(`http://localhost:${Number(port)}`);allowed.add(`http://127.0.0.1:${Number(port)}`);
+  }
   const configuredOrigins=[process.env.MVP_ALLOWED_ORIGIN,...(process.env.MVP_ALLOWED_ORIGINS?.split(",")??[])].filter((v):v is string=>!!v?.trim());
   for(const raw of configuredOrigins) {
     const configured=new URL(raw.trim());
