@@ -1,0 +1,176 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-10-28T15:13:36.537745+08:00",
+  "scope": "production functional deployment acceptance; not visual quality acceptance",
+  "codeCommit": "190912e5286f5974d2da0d070ccb6a1331648eb1",
+  "directorRevision": "director-v1.0.0",
+  "defaultEngine": "native",
+  "defaultSteps": 20,
+  "productionGpu": [
+    {
+      "mode": "h3_r2v",
+      "engine": "director",
+      "revision": "director-v1.0.0",
+      "outputNodeIds": [
+        "8"
+      ],
+      "metadata": {
+        "width": 640,
+        "height": 360,
+        "fps": 24.0,
+        "duration": 5.17,
+        "codec": "h264",
+        "audio_codec": "aac"
+      },
+      "framesVerified": 124,
+      "steps": 20,
+      "promptSubmissionCount": 1,
+      "requestRetryReturnedSameJob": true,
+      "bytes": 160024,
+      "sha256": "8c054e1e1caec9fe3c126e703ae315d91a500aa2b0b8e1c42561039ab65b9f26",
+      "faststart": true,
+      "checks": {
+        "completeDecode": true,
+        "poster": true,
+        "head200": true,
+        "rangePrefix206": true,
+        "rangeSuffix206": true,
+        "etag304": true,
+        "downloadByteIdentity": true
+      }
+    },
+    {
+      "mode": "h3_i2v",
+      "engine": "director",
+      "revision": "director-v1.0.0",
+      "outputNodeIds": [
+        "8"
+      ],
+      "metadata": {
+        "width": 640,
+        "height": 360,
+        "fps": 24.0,
+        "duration": 5.17,
+        "codec": "h264",
+        "audio_codec": "aac"
+      },
+      "framesVerified": 124,
+      "steps": 20,
+      "promptSubmissionCount": 1,
+      "requestRetryReturnedSameJob": true,
+      "bytes": 191308,
+      "sha256": "4fc6360c8d369818b9968fd6c683d2986f9b9a62c1bbfe8473bea5d95afb6f63",
+      "faststart": true,
+      "checks": {
+        "completeDecode": true,
+        "poster": true,
+        "head200": true,
+        "rangePrefix206": true,
+        "rangeSuffix206": true,
+        "etag304": true,
+        "downloadByteIdentity": true
+      }
+    },
+    {
+      "mode": "h3_t2v",
+      "engine": "director",
+      "revision": "director-v1.0.0",
+      "outputNodeIds": [
+        "8"
+      ],
+      "metadata": {
+        "width": 640,
+        "height": 360,
+        "fps": 24.0,
+        "duration": 5.17,
+        "codec": "h264",
+        "audio_codec": "aac"
+      },
+      "framesVerified": 124,
+      "steps": 20,
+      "promptSubmissionCount": 1,
+      "requestRetryReturnedSameJob": true,
+      "bytes": 819156,
+      "sha256": "e6c4fb615509c28fe2affed32f0d63009ef3b357f90f2f0ff84ee66efc723599",
+      "faststart": true,
+      "checks": {
+        "completeDecode": true,
+        "poster": true,
+        "head200": true,
+        "rangePrefix206": true,
+        "rangeSuffix206": true,
+        "etag304": true,
+        "downloadByteIdentity": true
+      }
+    }
+  ],
+  "preservationAndHttps": {
+    "oldJobsUnchanged": 25,
+    "oldAssetsUnchanged": 14,
+    "historicalMediaHttpsByteVerified": 16,
+    "historicalPostersHttpsByteVerified": 13,
+    "directorMediaHttpsByteVerified": 3,
+    "directorRangeHttps206": true,
+    "directorAttachmentHttpsByteVerified": true,
+    "credentialsAndWorkerIdentityPreserved": true,
+    "queue": {
+      "active": 0,
+      "limit": 500
+    },
+    "imageGenerationEnabled": false,
+    "allSixWorkflowOptionsReady": true,
+    "integrity": "ok",
+    "jobsByStatus": {
+      "canceled": 3,
+      "completed": 19,
+      "failed": 6
+    }
+  },
+  "restart": {
+    "jobsRetainedAfterIdleWebWorkerAndH3Restart": 28,
+    "completedDirectorJobsRetained": 3,
+    "persistedDirectorPromptIdsPresent": true,
+    "newComfySubmissionsAfterRestart": 0,
+    "workerOnline": true,
+    "h3Online": true,
+    "allDirectorModesReady": true,
+    "pinnedMemoryDisabled": true,
+    "dynamicVramPreserved": true,
+    "allCustomNodesDisabledExceptAuditedWhitelist": true
+  },
+  "configurationPreservation": {
+    "shared8188PluginUnchanged": true,
+    "routeConfigUnchanged": true,
+    "tailscaleServeUnchanged": true
+  },
+  "browserLoopbackPlayback": {
+    "currentTime": 5.167,
+    "duration": 5.167,
+    "ended": true,
+    "error": null,
+    "height": 360,
+    "muted": false,
+    "paused": true,
+    "readyState": 4,
+    "width": 640
+  },
+  "browserDownloadByteIdentity": true,
+  "sourceChecks": {
+    "typescriptTestsPassed": 80,
+    "pythonTestsPassed": 254,
+    "typecheck": true,
+    "ruff": true,
+    "productionBuild": true,
+    "baselineFilesUnchanged": 11,
+    "productionPythonDependenciesConsistent": true
+  },
+  "notVerified": [
+    "visual quality and generated dialogue/lip synchronization",
+    "new quality presets, FaceRefine, second pass, SelfLift, Semantic Bridge, Turbo",
+    "physical M64 browser",
+    "OS reboot/logon lifecycle",
+    "all parameter/reference-count combinations",
+    "editable graph manual import/export",
+    "private HTTPS page in local Chrome (navigation timed out; HTTP health/state/media/Range passed)"
+  ]
+}

@@ -1,5 +1,9 @@
 # Director application and workflow integration
 
+This document records the isolated integration milestone. Subsequent production
+deployment and current continuation status are in
+[NEXT-CODEX-HANDOFF.md](NEXT-CODEX-HANDOFF.md).
+
 This source integration combines workflow candidate
 `7d106504473b12379ac14bb98942c0c44efff530` and application candidate
 `b640d4a0effa0c052a80abc339585c0fb2d3f9d7`. The immutable `v1.0.0` baseline

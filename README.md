@@ -14,6 +14,9 @@ Optional Director generation is integrated behind explicit enable flags; native
 remains the default. See [Director integration and acceptance](DIRECTOR-INTEGRATION.md)
 for the package contract, executed checks and remaining rollout validation.
 
+Current rollout status and continuation tasks: [next Codex handoff](NEXT-CODEX-HANDOFF.md).
+The next development milestone is [Director visual quality](DIRECTOR-QUALITY-PLAN.md).
+
 This is a personal private-network application, not a completed public
 multi-user SaaS service. Keep Node on loopback and use a private HTTPS origin.
 
