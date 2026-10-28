@@ -10,6 +10,10 @@ upload progress/recovery, persistent history, posters, playback and downloads.
 The queue holds 500 unfinished jobs with one executing job. Mac image generation
 is disabled in this deployment; historical image results remain usable.
 
+Optional Director generation is integrated behind explicit enable flags; native
+remains the default. See [Director integration and acceptance](DIRECTOR-INTEGRATION.md)
+for the package contract, executed checks and remaining rollout validation.
+
 This is a personal private-network application, not a completed public
 multi-user SaaS service. Keep Node on loopback and use a private HTTPS origin.
 

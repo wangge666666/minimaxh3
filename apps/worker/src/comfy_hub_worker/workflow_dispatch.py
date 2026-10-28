@@ -1,20 +1,18 @@
-"""Application metadata/dispatch guard; graph construction stays with mapping.py.
-
-Director registry and builder contracts are pending. File presence must never
-enable an unaccepted workflow. Replace that guard only at the reviewed handoff.
-"""
+"""Validate persisted application metadata before constructing a reviewed graph."""
 
 import hashlib
 import json
 import re
 from pathlib import Path
 
+from comfy_hub_worker.director_contract import director_metadata
+
 MODES = {"text", "img2img", "h3_t2v", "h3_i2v", "h3_r2v"}
 
 
 def engine_for(job: dict) -> str:
     engine = job.get("workflowEngine", "native")
-    if engine not in {"native", "director"}:
+    if engine not in ("native", "director"):
         raise ValueError("未知工作流引擎，禁止降级或重新提交")
     return engine
 
@@ -63,7 +61,11 @@ def validate_assets(job: dict):
     seen = set()
     mode = job["mode"]
     for asset in assets:
+        if not isinstance(asset, dict):
+            raise ValueError("参考素材描述无效")
         key, kind = asset.get("key"), asset.get("kind")
+        if not isinstance(key, str) or not isinstance(kind, str):
+            raise ValueError("参考素材描述无效")
         allowed = (
             mode == "img2img" and key == "reference" and kind == "image"
             or mode == "h3_i2v" and key in {"first_frame", "last_frame"} and kind == "image"
@@ -83,11 +85,18 @@ def validate_assets(job: dict):
         raise ValueError("请上传首帧图片")
 
 
-def prepare_submission(job: dict, directory: Path):
+def prepare_submission(job: dict, directory: Path, *, director_enabled=False):
     engine = engine_for(job)
     if engine == "director":
-        raise ValueError("导演台尚未完成接口交付与验收，禁止提交或降级")
-    revision, outputs = native_metadata(directory, job["mode"])
+        if not director_enabled:
+            raise ValueError("导演台尚未启用，禁止提交或降级")
+        revision, outputs = director_metadata(directory, job["mode"])
+        if job.get("workflowRevision") is None or job.get("workflowOutputNodeIds") is None:
+            raise ValueError("导演台任务缺少固定版本或输出，禁止重新选择版本")
+        if job["mode"] != "h3_t2v" and not job.get("assets"):
+            raise ValueError("导演台参考任务缺少素材")
+    else:
+        revision, outputs = native_metadata(directory, job["mode"])
     if job.get("workflowRevision") is not None and job["workflowRevision"] != revision:
         raise ValueError("任务固定的工作流版本不可用，禁止使用当前模板替换")
     if job.get("workflowOutputNodeIds") is not None:

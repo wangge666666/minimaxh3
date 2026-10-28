@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     comfyui_base_url: AnyHttpUrl = AnyHttpUrl("http://127.0.0.1:8188")
     h3_comfyui_base_url: AnyHttpUrl | None = None
     image_generation_enabled: bool = True
+    director_enabled: bool = False
     poll_interval_seconds: float = Field(default=5, ge=1, le=300)
     max_concurrent_jobs: int = Field(default=1, ge=1, le=8)
     workflow_directory: Path = Path("../../workflows")

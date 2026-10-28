@@ -1,0 +1,193 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-28",
+  "timezone": "Asia/Taipei",
+  "scope": "isolated integration; no production rollout",
+  "candidates": {
+    "workflows": "7d106504473b12379ac14bb98942c0c44efff530",
+    "application": "b640d4a0effa0c052a80abc339585c0fb2d3f9d7"
+  },
+  "checks": {
+    "typescriptTestsPassed": 80,
+    "pythonTestsPassed": 254,
+    "typecheck": true,
+    "ruff": true,
+    "productionBuild": true,
+    "baselineFilesUnchanged": 11,
+    "privateFilesExcludedFromStandaloneTrace": true
+  },
+  "integratedGpu": {
+    "cases": [
+      {
+        "id": "cc080b3d-1470-4d7b-9502-4d49e5c50085",
+        "mode": "h3_r2v",
+        "engine": "director",
+        "revision": "director-v1.0.0",
+        "outputNodeIds": [
+          "8"
+        ],
+        "promptId": "471b36cf-7bff-4944-8fdd-b9ee959b79cb",
+        "promptSubmissionCount": 1,
+        "metadata": {
+          "width": 640,
+          "height": 360,
+          "fps": 24.0,
+          "duration": 5.17,
+          "codec": "h264",
+          "audio_codec": "aac"
+        },
+        "framesVerified": 124,
+        "sha256": "ab9b6bed30532461e39738b824396f5063cd7616dfa21e2cad4e3d55ed29ed9b",
+        "bytes": 176403,
+        "faststart": true,
+        "checks": {
+          "completeDecode": true,
+          "poster": true,
+          "head": true,
+          "rangePrefix": true,
+          "rangeSuffix": true,
+          "etag304": true,
+          "downloadByteIdentity": true
+        }
+      },
+      {
+        "id": "91f75a5d-8abf-4744-adb1-44b14408b1b5",
+        "mode": "h3_t2v",
+        "engine": "director",
+        "revision": "director-v1.0.0",
+        "outputNodeIds": [
+          "8"
+        ],
+        "promptId": "46c6c878-bf92-443c-acd4-e9b20a070666",
+        "promptSubmissionCount": 1,
+        "metadata": {
+          "width": 640,
+          "height": 360,
+          "fps": 24.0,
+          "duration": 5.17,
+          "codec": "h264",
+          "audio_codec": "aac"
+        },
+        "framesVerified": 124,
+        "sha256": "abd21d2909855835fc97e11f0bbd5b953eca8540265e15c8536850676252000c",
+        "bytes": 794607,
+        "faststart": true,
+        "checks": {
+          "completeDecode": true,
+          "poster": true,
+          "head": true,
+          "rangePrefix": true,
+          "rangeSuffix": true,
+          "etag304": true,
+          "downloadByteIdentity": true
+        }
+      },
+      {
+        "id": "a80c8581-ceba-4273-bcd3-2449d4c0b727",
+        "mode": "h3_t2v",
+        "engine": "native",
+        "revision": "native-sha256:9d05548aaf437ef7198ee9a127ce024f7542aac1f503ba4f5824bf6e9bca2235",
+        "outputNodeIds": [
+          "92"
+        ],
+        "promptId": "56259530-64ae-4c49-afc5-d733ca226893",
+        "promptSubmissionCount": 1,
+        "metadata": {
+          "width": 640,
+          "height": 360,
+          "fps": 24.0,
+          "duration": 5.17,
+          "codec": "h264",
+          "audio_codec": "aac"
+        },
+        "framesVerified": 124,
+        "sha256": "1812c04fa2f9d4d70be39bce7119eecfe930b1845f12e7f6b3b43114a6497e93",
+        "bytes": 794605,
+        "faststart": true,
+        "checks": {
+          "completeDecode": true,
+          "poster": true,
+          "head": true,
+          "rangePrefix": true,
+          "rangeSuffix": true,
+          "etag304": true,
+          "downloadByteIdentity": true
+        }
+      },
+      {
+        "id": "f9716da0-69ff-4645-ae27-cf42bf227824",
+        "mode": "h3_i2v",
+        "engine": "director",
+        "revision": "director-v1.0.0",
+        "outputNodeIds": [
+          "8"
+        ],
+        "promptId": "4ec4ebb2-3ab7-4d1b-9901-5939359fe2db",
+        "promptSubmissionCount": 1,
+        "metadata": {
+          "width": 640,
+          "height": 360,
+          "fps": 24.0,
+          "duration": 5.17,
+          "codec": "h264",
+          "audio_codec": "aac"
+        },
+        "framesVerified": 124,
+        "sha256": "873089c6ae759750a63825ecfc6c810a08dcef09399647baa6582af079405d0b",
+        "bytes": 165357,
+        "faststart": true,
+        "checks": {
+          "completeDecode": true,
+          "poster": true,
+          "head": true,
+          "rangePrefix": true,
+          "rangeSuffix": true,
+          "etag304": true,
+          "downloadByteIdentity": true
+        }
+      }
+    ],
+    "workerRestartKeptOriginalPrompt": true,
+    "concurrency": 1,
+    "queueLimit": 500
+  },
+  "browserPlayback": {
+    "currentTime": 5.167,
+    "duration": 5.167,
+    "ended": true,
+    "error": null,
+    "height": 360,
+    "muted": false,
+    "paused": true,
+    "readyState": 4,
+    "width": 640
+  },
+  "actualBrowserDownloadByteIdentity": true,
+  "restart": {
+    "webWorkerRestartPreservedJobs": 7,
+    "promptCountAfterRestart": 7,
+    "duplicateWorkerRejected": true,
+    "allDirectorModesReadyAfterRestart": true
+  },
+  "offlineRuntime": {
+    "directorOfflineRejected503": true,
+    "rejectedRequestDidNotCreateJob": true,
+    "nativeOfflineQueuePreserved": true,
+    "nativeQueuedTestCanceledBeforeClaim": true
+  },
+  "historicalDatabaseCopy": {
+    "historicalJobs": 25,
+    "completedMediaByteVerified": 16,
+    "allRowsAndAssetsUnchanged": true,
+    "integrity": "ok",
+    "testWorkerConnected": false
+  },
+  "notVerified": [
+    "physical M64 browser",
+    "production scheduled-task boot/restart",
+    "all larger parameter combinations and maximum reference counts",
+    "accelerated variants",
+    "editable graph frontend import/export (HTTP 403)",
+    "generated dialogue word accuracy and lip synchronization"
+  ]
+}

@@ -1,7 +1,7 @@
 import { z, ZodError } from "zod";
 import sharp from "sharp";
 import { createSchema, storedParamsSchema, isVideoMode, modes } from "@/lib/mvp/schema";
-import { workflowOptions, WorkflowUnavailable } from "@/lib/mvp/workflows";
+import { workflowOptions, refreshDirectorRuntime, WorkflowUnavailable } from "@/lib/mvp/workflows";
 import { totalAssetBytes } from "@/lib/mvp/h3";
 import { parseAssets } from "@/lib/mvp/uploads";
 import { getStore, StoreError } from "@/lib/mvp/store";
@@ -18,7 +18,10 @@ async function handle(request: Request, context: {params:Promise<{path?:string[]
     const parts=(await context.params).path??[], action=parts.join("/"), method=request.method;
     const worker=parts[0]==="worker"; if(worker) requireWorker(request);
     const db=getStore();
-    if (method==="GET" && action==="state") return json({...db.state(),features:{imageGeneration:process.env.MVP_IMAGE_GENERATION_ENABLED!=="0"},workflows:workflowOptions()});
+    if (method==="GET" && action==="state") {
+      await refreshDirectorRuntime();
+      return json({...db.state(),features:{imageGeneration:process.env.MVP_IMAGE_GENERATION_ENABLED!=="0"},workflows:workflowOptions()});
+    }
     if(method==="GET" && parts[0]==="jobs" && parts[1]==="request" && parts.length===3) {
       const job=db.findByRequestId(uuid.parse(parts[2]));
       if(!job) throw new StoreError("此提交尚未创建任务",404);
@@ -52,7 +55,9 @@ async function handle(request: Request, context: {params:Promise<{path?:string[]
         if(submission && submission!==params.requestId) throw new StoreError("提交编号不一致",400);
         const existing=db.findByRequestId(params.requestId);
         if(!existing && !isVideoMode(params.mode) && process.env.MVP_IMAGE_GENERATION_ENABLED==="0") throw new StoreError("本站已关闭 Mac 图片生成，请使用视频创作。历史图片仍可查看和下载。",410);
-        const job=existing??db.create(params,null,await parseAssets(form,params.mode));
+        const assets=existing?[]:await parseAssets(form,params.mode);
+        if(!existing && params.workflowEngine==="director") await refreshDirectorRuntime();
+        const job=existing??db.create(params,null,assets);
         console.info(JSON.stringify({event:"job_upload_accepted",submission:params.requestId,job_id:job.id,bytes,elapsed_ms:Date.now()-started,reused:!!existing}));
         return json(job,201);
       } catch(error) {

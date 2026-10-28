@@ -1,5 +1,8 @@
 # Director 工作流交付契约 v1
 
+后续应用与工作流整合、启用开关和实际联调验收见
+[DIRECTOR-INTEGRATION.md](DIRECTOR-INTEGRATION.md)。下文保留工作流候选交付时的契约与边界。
+
 工作流分支 `codex/director-workflows`；协作起点 `533c8d80134db4edd7b8d71649c14113fc541c2d`。
 应用候选 `b640d4a0effa0c052a80abc339585c0fb2d3f9d7` 已核对，本分支没有改写应用负责人文件。
 安装时以本交付的完整 Git SHA 固定整包；不要只复制一个 JSON，也不要切换生产 Hub。

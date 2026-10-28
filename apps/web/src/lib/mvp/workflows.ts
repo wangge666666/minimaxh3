@@ -1,8 +1,10 @@
 import { createHash } from "node:crypto";
-import { existsSync, readFileSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { storedParamsSchema, type CreateJob, type StoredParams } from "./schema";
 import { nativeDefaults, nativeLimits, videoModes, type WorkflowOption } from "./workflow-options";
+import { directorMetadata, directorOption } from "./director-registry";
+export { refreshDirectorRuntime } from "./director-registry";
 
 export class WorkflowUnavailable extends Error {}
 export function workflowDirectory() {
@@ -29,30 +31,41 @@ function nativeMetadata(mode: string, directory: string) {
   } catch { throw new WorkflowUnavailable("原生工作流文件缺失或不可用，请检查安装"); }
 }
 
-// No registry format has been delivered. Do not interpret a guessed schema or
-// treat file presence as GPU acceptance. This is the single adapter to replace
-// once the workflow owner supplies the reviewed registry and loader commit.
 export function workflowOptions(directory = workflowDirectory()): WorkflowOption[] {
-  const reason = existsSync(resolve(directory, "h3_capabilities.json"))
-    ? "导演台尚未完成接口对接与验收"
-    : "导演台尚未就绪，正在等待工作流交付与验收";
   return videoModes.flatMap(mode => {
     let nativeReason: string | undefined;
     try { nativeMetadata(mode, directory); } catch { nativeReason = "原生工作流安装不完整"; }
+    let director:WorkflowOption;
+    try {
+      const {defaults,limits}=directorOption(directory,mode);
+      director={engine:"director",mode,ready:true,defaults,limits};
+    } catch(error) {
+      director={engine:"director",mode,ready:false,reason:(error as Error).message,defaults:nativeDefaults,limits:nativeLimits};
+    }
     return [
       { engine: "native" as const, mode, ready: !nativeReason, reason: nativeReason, defaults: nativeDefaults, limits: nativeLimits },
-      { engine: "director" as const, mode, ready: false, reason, defaults: nativeDefaults, limits: nativeLimits },
+      director,
     ];
   });
 }
 
 export function pinWorkflow(params: CreateJob, directory = workflowDirectory()): StoredParams {
   const engine = params.workflowEngine === undefined ? "native" : params.workflowEngine;
-  if (engine !== "native") throw new WorkflowUnavailable("导演台尚未就绪，请选择原生生成方式");
+  let metadata: {workflowRevision:string;workflowOutputNodeIds:string[]};
+  if(engine==="director") {
+    if(!videoModes.includes(params.mode as typeof videoModes[number])) throw new WorkflowUnavailable("导演台仅支持视频创作");
+    try {
+      const mode=params.mode as typeof videoModes[number],{registry}=directorOption(directory,mode),p=registry.parameters;
+      if(!p.dimensions.some(([w,h])=>w===params.width && h===params.height) || !p.steps.includes(params.steps??20) || !p.frames.includes(params.frames??124) || !p.refImageSize.includes(params.refImageSize??"match") || params.seed<p.seed.min || params.seed>p.seed.max || (params.durationSeconds!==undefined && (params.durationSeconds<p.durationSeconds.min || params.durationSeconds>p.durationSeconds.max))) throw new Error("参数超出导演台能力范围");
+      metadata=directorMetadata(directory,mode);
+    } catch(error) { throw new WorkflowUnavailable(`导演台未就绪：${(error as Error).message}`); }
+  } else {
+    metadata=nativeMetadata(params.mode,directory);
+  }
   const defaults = params.mode.startsWith("h3_") ? {
     frames: params.frames ?? 124, fps: 24 as const, steps: params.steps ?? 20,
     sound: params.sound ?? true, referenceVideoAudio: params.referenceVideoAudio ?? true,
     refImageSize: params.refImageSize ?? "match",
   } : {};
-  return storedParamsSchema.parse({ ...params, ...defaults, workflowEngine: engine, ...nativeMetadata(params.mode, directory) });
+  return storedParamsSchema.parse({ ...params, ...defaults, workflowEngine: engine, ...metadata });
 }

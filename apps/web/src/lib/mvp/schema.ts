@@ -28,8 +28,11 @@ export const createSchema = z.object({
 export type CreateJob = z.infer<typeof createSchema>;
 // Server-owned metadata is deliberately absent from the browser request schema.
 export const storedParamsSchema = createSchema.safeExtend({
-  workflowRevision: z.string().regex(/^native-sha256:[a-f0-9]{64}$/).optional(),
+  workflowRevision: z.union([z.string().regex(/^native-sha256:[a-f0-9]{64}$/),z.literal("director-v1.0.0")]).optional(),
   workflowOutputNodeIds: z.array(z.string().regex(/^[a-zA-Z0-9_:-]{1,128}$/)).min(1).max(16).optional(),
+}).superRefine((p,ctx)=>{
+  if(p.workflowEngine==="director" && (p.workflowRevision!=="director-v1.0.0" || JSON.stringify(p.workflowOutputNodeIds)!=='["8"]')) ctx.addIssue({code:"custom",path:["workflowRevision"],message:"导演台任务缺少固定版本或输出"});
+  if(p.workflowEngine!=="director" && p.workflowRevision?.startsWith("director-")) ctx.addIssue({code:"custom",path:["workflowRevision"],message:"工作流引擎与修订不一致"});
 });
 export type StoredParams = z.infer<typeof storedParamsSchema>;
 export type Job = StoredParams & { id: string; status: string; created_at: number; updated_at: number; message: string; prompt_id: string | null; queue_position: number | null; media_type: "image"|"video"; assets: Asset[]; has_poster:boolean };

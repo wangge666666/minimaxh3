@@ -36,7 +36,7 @@ def test_legacy_native_is_pinned_and_default_settings_forwarded():
 
 
 @pytest.mark.parametrize("extra,reason", [
-    ({"workflowEngine": "director"}, "尚未完成"),
+    ({"workflowEngine": "director"}, "尚未启用"),
     ({"workflowEngine": "turbo"}, "未知工作流"),
     ({"workflowEngine": None}, "未知工作流"),
     ({"workflowRevision": "native-sha256:" + "0" * 64}, "版本不可用"),

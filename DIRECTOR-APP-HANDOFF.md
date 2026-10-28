@@ -1,5 +1,9 @@
 # Director application candidate
 
+This document records the original application candidate. The subsequent
+combined implementation and acceptance are in
+[DIRECTOR-INTEGRATION.md](DIRECTOR-INTEGRATION.md).
+
 Application branch: `codex/director-app`. Common starting commit:
 `533c8d80134db4edd7b8d71649c14113fc541c2d`. Baseline tag `v1.0.0` is unchanged.
 

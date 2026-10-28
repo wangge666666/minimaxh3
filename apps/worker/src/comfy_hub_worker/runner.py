@@ -162,7 +162,10 @@ async def execute(job: dict, journal: Journal, cloud: Cloud, comfy: Comfy, setti
         job.update(prompt_id=prompt_id, workflowOutputNodeIds=outputs)
         journal.save(job)
     else:
-        prepare_submission(job, settings.workflow_directory)
+        prepare_submission(
+            job, settings.workflow_directory,
+            director_enabled=getattr(settings, "director_enabled", False),
+        )
         values = workflow_values(job)
         workflow, outputs = load_workflow(settings.workflow_directory, job["mode"], values)
     state = await cloud.progress(job, "running", "正在准备工作流", prompt_id)
@@ -208,7 +211,10 @@ async def execute(job: dict, journal: Journal, cloud: Cloud, comfy: Comfy, setti
             workflow, outputs = load_workflow(settings.workflow_directory, job["mode"], values)
         # Media normalization may take time. Refuse a template/configuration
         # replacement between the initial check and the actual submission.
-        prepare_submission(job, settings.workflow_directory)
+        prepare_submission(
+            job, settings.workflow_directory,
+            director_enabled=getattr(settings, "director_enabled", False),
+        )
         if outputs != job["workflowOutputNodeIds"]:
             raise ValueError("工作流输出与持久化版本不匹配，禁止提交")
         job["submission_pending"] = True
